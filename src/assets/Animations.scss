@@ -1,0 +1,82 @@
+
+.right-to-left{
+    &-enter{
+        &-from{
+            transform: translateX(-10vw);
+            opacity: 0;
+        }
+        &-active{
+            transition:all .5s ease-out;
+        }
+    }
+    &-leave{
+        &-to{
+            transform: translateX(10vw);
+            opacity: 0;
+        }
+        &-active{
+            transition:all .5s ease-in;
+        }
+    }
+}
+
+.fade{
+    &-enter{
+        &-from{
+            opacity: 0;
+        }
+        &-active{
+            transition:all .25s ease-out;
+        }
+    }
+    &-leave{
+        &-to{
+            opacity: 0;
+        }
+        &-active{
+            transition:all .25s ease-in;
+        }
+    }
+}
+
+.dialog{
+    &-enter{
+        &-from{
+            opacity: 0;
+            transform: translate(-50%, calc(-50% + 25px));
+        }
+        &-active{
+            transition:all .25s ease-out;
+        }
+    }
+    &-leave{
+        &-to{
+            opacity: 0;
+            transform: translate(-50%, calc(-50% + 25px));
+        }
+        &-active{
+            transition:all .25s ease-in;
+        }
+    }
+}
+
+.menu{
+    &-enter{
+        &-from{
+            opacity: .5;
+            transform: translateX(-100%);
+        }
+        &-active{
+            transition:all .25s ease-out;
+        }
+    }
+    &-leave{
+        &-to{
+            opacity: .5;
+            transform: translate(-100%);
+        }
+        &-active{
+            transition:all .25s ease-in;
+        }
+    }
+}
