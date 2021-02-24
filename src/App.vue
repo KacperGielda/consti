@@ -10,8 +10,8 @@
 
   <the-header></the-header>
   <div class="background">
-    <router-view/>
   </div>
+  <router-view/>
 </template>
 
 <script>
@@ -36,8 +36,9 @@ export default {
   text-align: center;
   color: $black;
   overflow-x: hidden;
+  min-height: 100vh;
 }
-.background{
+body{
   width: 100%;
   min-height: calc(100vh - 50px);
   background-image: url("assets/pexels-sami-anas-5137655.jpg");

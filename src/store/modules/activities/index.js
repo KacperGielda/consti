@@ -17,7 +17,12 @@ export default {
                         id: 1,
                     },
                 ],
-                [null],
+                [
+                    {
+                        timeStamps: [12, 13],
+                        id: 1,
+                    },
+                ],
                 [
                     {
                         timeStamps: [10, 13],
@@ -36,7 +41,7 @@ export default {
                         id: 0,
                     },
                 ],
-                [null],
+                [],
                 [
                     {
                         timeStamps: [18, 20],
@@ -60,17 +65,17 @@ export default {
                         {
                             id: 1,
                             desc: "Zbuduj frontend",
-                            status: "in progress",
+                            status: "in-progress",
                         },
                         {
                             id: 2,
                             desc: "Zbuduj API",
-                            status: "to do",
+                            status: "to-do",
                         },
                         {
                             id: 3,
                             desc: "skonfiguruj PWA",
-                            status: "to do",
+                            status: "to-do",
                         },
                     ],
                 },
@@ -89,7 +94,7 @@ export default {
                         {
                             id: 1,
                             desc: "Posprzątaj łaźienke",
-                            status: "in progress",
+                            status: "in-progress",
                         },
                     ],
                 },

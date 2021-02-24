@@ -1,42 +1,65 @@
 <template>
-  <div class="task-container">
-    <header>
-      <span>{{ `${task.timeStamps[0]}-${task.timeStamps[1]} ` }}</span
-      ><span> {{ task.from }}</span>
-    </header>
-    <section>
-        <label :for="`task${task.id}}`"><h3>{{currentTask}}</h3></label> <input type="checkbox" :id="`task${task.id}}`">
-    </section>
+  <div :class="`task-container ${status}`">
+    <div class="desc">{{ desc }}</div>
+    <div class="status">
+      {{ status }}
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-    props:['task'],
-    computed:{
-        currentTask(){
-           return this.task.tasks.find(task => task =! task.isFinished).title;
-        }
-    }
-}
+  props: ["desc", "id", "status"],
+};
 </script>
 
 <style lang="scss" scoped>
 @import "../../assets/Colors.scss";
-.task-container{
-    width: 400px;
-    height: 150px;
-    background-color: $teal;
-    margin: 25px;
-    color: $white;
-    border-radius:20px;
-    overflow: hidden;
-    header{
-        background-color: $teal-dark;
-        height: 50px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
+.task-container {
+  width: 680px;
+  max-width: 85vw;
+  height: 50px;
+  margin-top: 10px;
+  background-color: $teal;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  color: white;
+  .desc {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 20px;
+  }
+  .status {
+    width: 200px;
+    height: 100%;
+    border-radius: 20px;
+    background-color: $white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.done {
+    background-color: rgba($teal, 0.7);
+    text-decoration: line-through;
+    .status {
+      background-color: rgba($teal-dark, 0.7);
     }
+  }
+  &.to-do {
+    background-color: $teal;
+    .status {
+      color: $teal;
+    }
+  }
+  &.in-progress {
+    background-color: $yellow;
+    .status {
+      color: $yellow;
+    }
+  }
 }
 </style>

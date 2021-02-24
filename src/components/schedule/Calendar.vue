@@ -37,56 +37,19 @@
 </template>
 
 <script>
-// import { mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 export default {
-  data() {
-    return {
-      selected: {
-        month: new Date().getMonth(),
-        year: new Date().getFullYear(),
-        day: new Date().getDate(),
-      },
-      today: new Date(),
-      displayedDate: new Date(),
-    };
-  },
   computed: {
-    // ...mapGetters("date", {
-    //   selected: "selected",
-    //   today: "today",
-    //   displayedDate: "displayedDate",
-    //   displayedYear: "displayedYear",
-    //   displayedMonth: "displayedMonth",
-    //   displayedDay: "displayedDay",
-    // }),
+    ...mapGetters("date", {
+      selected: "selected",
+      today: "today",
+      displayedDate: "displayedDate",
+      displayedYear: "displayedYear",
+      displayedMonth: "displayedMonth",
+      displayedDay: "displayedDay",
+      dateText: 'displayedDateText',
+    }),
 
-    displayedYear() {
-        return this.displayedDate.getFullYear();
-    },
-    displayedMonth() {
-        return this.displayedDate.getMonth();
-    },
-    displayedDay() {
-        return this.displayedDate.getDate();
-    },
-
-    dateText() {
-      let months = [
-        "Styczeń",
-        "Luty",
-        "Marzec",
-        "Kwiecień",
-        "Maj",
-        "Czerwiec",
-        "Lipiec",
-        "Sierpień",
-        "Wrzedień",
-        "Październik",
-        "Listopad",
-        "Grudzień",
-      ];
-      return `${months[this.displayedMonth]} ${this.displayedYear}`;
-    },
     days() {
       const thisYear = this.displayedYear;
       const thisMonth = this.displayedMonth;
@@ -159,46 +122,47 @@ export default {
   },
   methods: {
     nextMonth() {
-      this.displayedDate = new Date(
-        this.displayedYear,
-        this.displayedDate.getMonth() + 1,
-        this.displayedDay
-      );
+      this.$store.commit("date/updateDisplayedDate", {
+        year: this.displayedYear,
+        month: this.displayedMonth + 1,
+        day: this.displayedDay,
+      });
     },
     previousMonth() {
-      this.displayedDate = new Date(
-        this.displayedYear,
-        this.displayedDate.getMonth() - 1,
-        this.displayedDay
-      );
+      this.$store.commit("date/updateDisplayedDate", {
+        year: this.displayedYear,
+        month: this.displayedMonth - 1,
+        day: this.displayedDay,
+      });
     },
     selectDay(data) {
+      const newSelected = {};
       switch (data.month) {
         case "before":
           if (this.displayedMonth != 0) {
-            this.selected.month = this.displayedMonth - 1;
-            this.selected.year = this.displayedYear;
+            newSelected.month = this.displayedMonth - 1;
+            newSelected.year = this.displayedYear;
           } else {
-            this.selected.month = 11;
-            this.selected.year = this.displayedYear - 1;
+            newSelected.month = 11;
+            newSelected.year = this.displayedYear - 1;
           }
           break;
         case "after":
           if (this.displayedMonth != 11) {
-            this.selected.month = this.displayedMonth + 1;
-            this.selected.year = this.displayedYear;
+            newSelected.month = this.displayedMonth + 1;
+            newSelected.year = this.displayedYear;
           } else {
-            this.selected.month = 0;
-            this.selected.year = this.displayedYear + 1;
+            newSelected.month = 0;
+            newSelected.year = this.displayedYear + 1;
           }
           break;
         default:
-          this.selected.month = this.displayedMonth;
-          this.selected.year = this.displayedYear;
+          newSelected.month = this.displayedMonth;
+          newSelected.year = this.displayedYear;
       }
-      this.selected.day = data.day;
+      newSelected.day = data.day;
 
-      console.log(this.selected);
+    this.$store.commit('date/selectDate', newSelected)
     },
   },
 };

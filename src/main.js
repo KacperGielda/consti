@@ -9,8 +9,9 @@ import BaseInput from "./components/ui/BaseInput.vue";
 import BaseButton from "./components/ui/BaseButton.vue";
 import BaseDialog from "./components/ui/BaseDialog.vue";
 
-const app = createApp(App).use(store).use(router);
+const app = createApp(App);
 app.config.isCustomElement = tag => tag == 'ion-icon';
+app.use(store).use(router);
 
 app.component('base-container', BaseContainer);
 app.component('base-input', BaseInput);

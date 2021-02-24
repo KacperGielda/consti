@@ -42,7 +42,8 @@ export default {
 @import "../../assets/Animations.scss";
 header {
   height: 50px;
-  position: sticky;
+  position: fixed;
+  width: 100%;
   top: 0;
   left: 0;
   display: flex;
