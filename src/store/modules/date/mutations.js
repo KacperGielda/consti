@@ -8,6 +8,5 @@ export default {
     },
     selectDate(state, payload){
         state.selected = {month: payload.month, day: payload.day, year: payload.year};
-        // console.log(state.selected);
     },
 }

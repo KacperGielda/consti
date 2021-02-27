@@ -1,7 +1,7 @@
 <template>
   <div :class="`task-container ${status}`">
     <div class="desc">{{ desc }}</div>
-    <div class="status">
+    <div class="status" @click="$emit('change-status')">
       {{ status }}
     </div>
   </div>
@@ -25,6 +25,7 @@ export default {
   display: flex;
   overflow: hidden;
   color: white;
+  box-shadow: 2px 2px rgba($black, 0.1);
   .desc {
     width: 100%;
     height: 100%;
@@ -41,6 +42,9 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    &:hover{
+      cursor: pointer;
+    }
   }
   &.done {
     background-color: rgba($teal, 0.7);

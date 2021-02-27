@@ -49,7 +49,7 @@ export default {
                     },
                 ],
             ],
-            tasks: [
+            activities: [
                 {
                     id: 0,
                     date: new Date(),

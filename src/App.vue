@@ -11,7 +11,9 @@
   <the-header></the-header>
   <div class="background">
   </div>
-  <router-view/>
+  <!-- <transition name="routes" mode="out-in"> -->
+    <router-view/>
+  <!-- </transition> -->
 </template>
 
 <script>
@@ -26,6 +28,7 @@ export default {
 </script>
 <style lang="scss">
 @import "./assets/Colors.scss";
+@import "./assets/Animations.scss";
 * {
   margin: 0;
   padding: 0;

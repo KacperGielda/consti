@@ -13,7 +13,12 @@
         </section>
       </transition>
     </div>
-    <activity v-for="activity in selectedDayActivities" :key="activity.id" :time-stamps="activity.timeStamps" :id="activity.id" />
+    <activity
+      v-for="activity in selectedDayActivities"
+      :key="activity.id"
+      :time-stamps="activity.timeStamps"
+      :id="activity.id"
+    />
   </div>
 </template>
 
@@ -24,7 +29,7 @@ import Activity from "../components/schedule/Activity";
 export default {
   components: {
     Calendar,
-    Activity
+    Activity,
   },
   data() {
     return {
@@ -62,8 +67,8 @@ export default {
   margin-top: 50px;
 }
 .controls-container {
-  width: 700px;
-  max-width: 90vw;
+  width: 900px;
+  max-width: 95vw;
   margin: 20px;
   overflow: hidden;
   header {

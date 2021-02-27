@@ -1,0 +1,64 @@
+<template>
+  <div class="activities">
+    <h2>Aktywne</h2>
+    <ul v-if="activeExist">
+      <li v-for="activity in activities.active" :key="activity.id">
+        <activity-item :activity="activity"></activity-item>
+      </li>
+    </ul>
+    <h3 v-else><activity-item :activity="null"></activity-item></h3>
+
+    <h2>Nie Aktywne</h2>
+    <ul v-if="notActiveExist">
+      <li v-for="activity in activities.notActive" :key="activity.id">
+        <activity-item></activity-item>
+      </li>
+    </ul>
+    <h3 v-else><activity-item :activity="null"></activity-item></h3>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from "vuex";
+import ActivityItem from "../components/activities/ActivityItem";
+export default {
+  components: {
+    ActivityItem,
+  },
+  computed: {
+    ...mapGetters("activities", ["activities"]),
+    activeExist() {
+      return this.activities.active.length > 0;
+    },
+    notActiveExist() {
+      return this.activities.notActive.length > 0;
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import "../assets/Colors.scss";
+.activities {
+  padding-top: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+ul {
+  list-style: none;
+}
+h2 {
+  background-color: $teal;
+  width: 700px;
+  max-width: 90vw;
+  padding: 20px 0;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  color: $white;
+}
+</style>

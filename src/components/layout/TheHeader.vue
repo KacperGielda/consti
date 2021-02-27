@@ -9,10 +9,10 @@
             <router-link class="nav-link" to="/schedule" > <span @click="toggleNav">Terminarz</span>  </router-link>
           </li>
           <li>
-            <router-link class="nav-link" to="/">Zadania</router-link>
+            <router-link class="nav-link" to="/activities"><span @click="toggleNav">Aktywności</span></router-link>
           </li>
           <li>
-            <router-link class="nav-link" to="/">Ustawnienia</router-link>
+            <router-link class="nav-link" to="/"><span @click="toggleNav">Logowanie</span></router-link>
           </li>
         </ul>
       </nav>

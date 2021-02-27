@@ -31,6 +31,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  box-shadow: 2px 2px rgba($black, 0.1);
   header {
     border-radius: 20px 20px 0 0;
     height: 50px;

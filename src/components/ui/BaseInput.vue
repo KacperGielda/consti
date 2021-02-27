@@ -1,6 +1,6 @@
 <template>
-  <div :class="validation ? 'invalid' : ' '">
-    <label :for="id">{{ label }}:</label>
+  <div :class="divClass">
+    <label v-if="label" :for="id">{{ label }}:</label>
     <input
       :type="type"
       :id="id"
@@ -9,7 +9,7 @@
       @input="$emit('update:value', $event.target.value)"
       autocomplete="off"
     />
-    <p>{{ validation }}</p>
+    <p v-if="showValidation">{{ validation }}</p>
   </div>
 </template>
 
@@ -39,7 +39,23 @@ export default {
       type: String,
       default: null,
     },
+    showValidation: {
+      type: Boolean,
+      default: true,
+    },
+    fullWidth: {
+      type: Boolean,
+      default: false,
+    },
   },
+computed:{
+  divClass(){
+    let className = '';
+    className += this.validation ? 'invalid' : '';
+    className += this.fullWidth ? ' full-width' : '';
+    return className;
+  }
+}
 };
 </script>
 
@@ -52,6 +68,9 @@ div {
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
+  .full-width{
+    width: 100%;
+  }
 
   label {
     color: $teal;
