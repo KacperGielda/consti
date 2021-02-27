@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       timeStamps: this.dayData ? this.dayData.timeStamps : [0, 0],
-      default: null,
+      default: this.dayData ? JSON.parse(JSON.stringify(this.dayData.timeStamps)) : [0, 0],
       show: this.dayData ? true : false,
       status: "",
     };
@@ -45,9 +45,7 @@ export default {
   watch: {
     timeStamps: {
       deep: true,
-      handler(newValue, oldValue) {
-        console.log(newValue, oldValue);
-        if (!this.default) this.default = oldValue;
+      handler(newValue) {
         if (this.dayData) {
           if (newValue != this.dayData.timeStamps) {
             this.status = "changed";
@@ -68,14 +66,13 @@ export default {
   },
   methods:{
     undo(){
-      console.log('dupa')
       if (this.dayData){
         this.timeStamps = this.default;
         console.log(this.default);
         this.status = true;
       }
       else {
-        this.timeStamps = [0,0];
+        this.timeStamps = this.default;
         this.status = false;
       }
     }

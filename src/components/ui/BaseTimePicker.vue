@@ -15,15 +15,33 @@
 
 <script>
 export default {
-  props:['value', 'status'],
+  props: { value: { default: [0, 0] }, status },
   data() {
     return {
       hours: [],
       minutes: [],
-      hour: "00",
-      minute: "00",
+      // hour: "00",
+      // minute: "00",
     };
   },
+  computed: {
+    hour() {
+      let hour = Math.floor(this.value);
+      return hour.toString().length == 1 ? `0${hour}` : hour.toString();
+    },
+    minute() {
+      let minute = this.value - Math.floor(this.value);
+      return minute.toString().length == 1 ? `0${minute}` : minute.toString();
+    },
+  },
+  // watch:{
+  //  value(v){
+  //     let hour = Math.floor(v)
+  //     this.hour = hour.toString().length == 1 ? `0${hour}` : hour.toString();
+  //     let minute = v - Math.floor(v);
+  //     this.minute = minute.toString().length == 1 ? `0${minute}` : minute.toString();
+  //  }
+  // },
   mounted() {
     for (let i = 0; i <= 23; i++) {
       this.hours[i] = i.toString().length == 1 ? `0${i}` : i.toString();
@@ -31,17 +49,11 @@ export default {
     for (let i = 0; i <= 59; i++) {
       this.minutes[i] = i.toString().length == 1 ? `0${i}` : i.toString();
     }
-    if (this.value){
-      let hour = Math.floor(this.value)
-      this.hour = hour.toString().length == 1 ? `0${hour}` : hour.toString();
-      let minute = this.value - Math.floor(this.value);
-      this.minute = minute.toString().length == 1 ? `0${minute}` : minute.toString();
-    }
   },
   methods: {
     onSelect() {
       const time = Number(Number(this.hour) + Number(this.minute) / 60);
-      this.$emit('update:value',time);
+      this.$emit("update:value", time);
     },
   },
 };
@@ -57,7 +69,7 @@ export default {
     border: $white;
     outline: none;
     font-size: 20px;
-    &.changed{
+    &.changed {
       background-color: $yellow;
     }
     &:first-child {
