@@ -10,7 +10,8 @@
       </div>
     </header>
     <form>
-      <term-picker v-for="(day, index) in weekDays" :key="day" :title="day" :day-data="terms[index]"></term-picker>
+      <term-picker v-for="(day, index) in weekDays" :key="index" :title="day" :day-data="terms[index]" :day="index" :id="id" v-model:error='error'></term-picker>
+      <base-button v-if="!error">Zapisz</base-button>
     </form>
     <section>
       <base-task-list
@@ -40,6 +41,7 @@ export default {
         "Sobota",
         "Niedziela",
       ],
+      error: null,
     };
   },
   computed: {

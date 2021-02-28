@@ -67,11 +67,23 @@ input[type="checkbox"]:checked + .box::before {
   .box {
     color: $yellow !important;
   }
-  .box{
+  .box {
     border-color: $yellow;
   }
   input[type="checkbox"]:checked + .box::before {
-  background-color: $yellow;
+    background-color: $yellow;
+  }
 }
+.error {
+  label,
+  .box {
+    color: $red !important;
+  }
+  .box {
+    border-color: $red;
+  }
+  input[type="checkbox"]:checked + .box::before {
+    background-color: $red;
+  }
 }
 </style>

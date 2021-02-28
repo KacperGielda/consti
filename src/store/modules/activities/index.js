@@ -13,14 +13,22 @@ export default {
                         id: 0,
                     },
                     {
-                        timeStamps: [12, 15],
+                        timeStamps: [12.5, 15],
                         id: 1,
                     },
+                    {
+                        timeStamps: [20, 22],
+                        id: 2,
+                    }
                 ],
                 [
                     {
                         timeStamps: [12, 13],
                         id: 1,
+                    },
+                    {
+                        timeStamps: [13.5, 16],
+                        id: 2,
                     },
                 ],
                 [
@@ -81,6 +89,25 @@ export default {
                 },
                 {
                     id: 1,
+                    date: new Date(2020, 2, 2),
+                    title: "Porządki",
+                    progress: 0,
+                    isActive: true,
+                    subTasks: [
+                        {
+                            id: 0,
+                            desc: "Posprzątaj pokój",
+                            status: "done",
+                        },
+                        {
+                            id: 1,
+                            desc: "Posprzątaj łaźienke",
+                            status: "in-progress",
+                        },
+                    ],
+                },
+                {
+                    id: 2,
                     date: new Date(2020, 2, 2),
                     title: "Porządki",
                     progress: 0,

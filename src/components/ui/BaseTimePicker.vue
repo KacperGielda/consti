@@ -1,11 +1,16 @@
 <template>
   <div class="time-picker">
-    <select :class="`${status} hour`" @change="onSelect" v-model="hour">
-      <option v-for="hour in hours" :key="hour" :value="hour">
-        {{ hour }}
+    <select :class="`${className} hour`" @change="onSelect" v-model="hour">
+      <option
+        v-for="hour in hours"
+        :key="hour.value"
+        :value="hour.value"
+        :disabled="hour.off"
+      >
+        {{ hour.value }}
       </option>
     </select>
-    <select :class="`${status} minute`" @change="onSelect" v-model="minute">
+    <select :class="`${className} minute`" @change="onSelect" v-model="minute">
       <option v-for="minute in minutes" :key="minute" :value="minute">
         {{ minute }}
       </option>
@@ -15,45 +20,70 @@
 
 <script>
 export default {
-  props: { value: { default: [0, 0] }, status },
+  props: { value: { default: [0, 0] }, status, blockers: {} },
   data() {
     return {
       hours: [],
       minutes: [],
-      // hour: "00",
-      // minute: "00",
+      hour: "00",
+      minute: "00",
+      className: "",
     };
   },
-  computed: {
-    hour() {
-      let hour = Math.floor(this.value);
-      return hour.toString().length == 1 ? `0${hour}` : hour.toString();
+  // computed: {
+  //   hour() {
+  //     let hour = Math.floor(this.value);
+  //     return hour.toString().length == 1 ? `0${hour}` : hour.toString();
+  //   },
+  //   minute() {
+  //     let minute = this.value - Math.floor(this.value);
+  //     return minute.toString().length == 1 ? `0${minute}` : minute.toString();
+  //   },
+  // },
+  watch: {
+    value(v) {
+      let hour = Math.floor(v);
+      this.hour = hour.toString().length == 1 ? `0${hour}` : hour.toString();
+      let minute = v - Math.floor(v);
+      minute = Math.round((v - Math.floor(v)) * 60);
+      this.minute =
+        minute.toString().length == 1 ? `0${minute}` : minute.toString();
     },
-    minute() {
-      let minute = this.value - Math.floor(this.value);
-      return minute.toString().length == 1 ? `0${minute}` : minute.toString();
+    status(v) {
+      this.className = v;
     },
   },
-  // watch:{
-  //  value(v){
-  //     let hour = Math.floor(v)
-  //     this.hour = hour.toString().length == 1 ? `0${hour}` : hour.toString();
-  //     let minute = v - Math.floor(v);
-  //     this.minute = minute.toString().length == 1 ? `0${minute}` : minute.toString();
-  //  }
-  // },
   mounted() {
-    for (let i = 0; i <= 23; i++) {
-      this.hours[i] = i.toString().length == 1 ? `0${i}` : i.toString();
-    }
-    for (let i = 0; i <= 59; i++) {
-      this.minutes[i] = i.toString().length == 1 ? `0${i}` : i.toString();
-    }
+    this.generateOptions();
   },
   methods: {
     onSelect() {
       const time = Number(Number(this.hour) + Number(this.minute) / 60);
       this.$emit("update:value", time);
+    },
+    generateOptions() {
+      for (let i = 0; i <= 23; i++) {
+        let value = i.toString().length == 1 ? `0${i}` : i.toString();
+        let off = false;
+
+        this.blockers.forEach((el) => {
+          if (i > el[0] && i < el[1]) {
+            off = true;
+          }
+        });
+        // console.log(i, off);
+
+        this.hours[i] = { value, off };
+      }
+      for (let i = 0; i <= 59; i++) {
+        // if (this.blockers.includes(i)) continue;
+        this.minutes[i] = i.toString().length == 1 ? `0${i}` : i.toString();
+      }
+      let hour = Math.floor(this.value);
+      this.hour = hour.toString().length == 1 ? `0${hour}` : hour.toString();
+      let minute = Math.round((this.value - Math.floor(this.value)) * 60);
+      this.minute =
+        minute.toString().length == 1 ? `0${minute}` : minute.toString();
     },
   },
 };
@@ -71,6 +101,9 @@ export default {
     font-size: 20px;
     &.changed {
       background-color: $yellow;
+    }
+    &.error {
+      background-color: $red;
     }
     &:first-child {
       border: none;

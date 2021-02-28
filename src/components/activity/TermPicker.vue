@@ -5,13 +5,15 @@
       v-model:value="show"
       :status="status"
     ></base-checkbox>
-    <div v-if="show" class="time-stamps">
+    <div v-show="show" class="time-stamps">
       <base-time-picker
         v-model:value="timeStamps[0]"
+        :blockers="blockers"
         :status="status"
       ></base-time-picker>
       <base-time-picker
         v-model:value="timeStamps[1]"
+        :blockers="blockers"
         :status="status"
       ></base-time-picker>
     </div>
@@ -20,69 +22,73 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
-  props: ["title", "day-data"],
+  props: ["title", "day-data", "day", "id"],
   data() {
     return {
       timeStamps: this.dayData ? this.dayData.timeStamps : [0, 0],
-      default: this.dayData ? JSON.parse(JSON.stringify(this.dayData.timeStamps)) : [0, 0],
+      default: this.dayData
+        ? JSON.parse(JSON.stringify(this.dayData.timeStamps))
+        : [0, 0],
       show: this.dayData ? true : false,
       status: "",
     };
   },
   computed: {
-    stausMsg() {
-      switch (this.status) {
-        case "changed":
-          return "Zmieniono";
-        case "ocupied":
-          return "Wybrany termin jest już zajęty";
-        default:
-          return "";
-      }
+    ...mapGetters("activities", ["ocupiedTerms"]),
+    blockers() {
+      return this.ocupiedTerms(this.id, this.day);
     },
   },
   watch: {
     timeStamps: {
       deep: true,
       handler(newValue) {
-        if (this.dayData) {
-          if (newValue != this.dayData.timeStamps) {
-            this.status = "changed";
-          }
-        } else {
-          this.status = "changed";
+        let isOcupied = false;
+        this.blockers.forEach((el) => {
+          if (newValue[0] < el[0] && newValue[1] > el[1]-1) isOcupied = true;
+        });
+        if (isOcupied || (newValue[0] > newValue[1])){
+          console.log('error');
+          this.status = "error";
+          return;
         }
+        if (JSON.stringify(newValue) !== JSON.stringify(this.default)) {
+          this.status = "changed";
+        } else {
+          this.status = "";
+        }
+        // console.log(this.status);
       },
     },
     show(newValue) {
-      if (
-        (this.dayData && newValue == false) ||
-        (!this.dayData && newValue == true)
-      )
-        this.status = "changed";
-      else this.status = "";
+      if (this.dayData && newValue == false) this.status = "changed";
+      else if (!this.dayData && newValue == true) this.status = "changed";
+    },
+    status(newValue){
+      if(newValue == 'error') this.$emit('update:error', true);
+      else this.$emit('update:error', false);
+    }
+  },
+  methods: {
+    undo() {
+      if (this.dayData) {
+        this.timeStamps = this.default.slice();
+        console.log(this.default);
+        this.status = "";
+        console.log(this.status);
+        this.show = true;
+      } else {
+        this.timeStamps = this.default.slice();
+        this.status = "";
+        this.show = false;
+      }
     },
   },
-  methods:{
-    undo(){
-      if (this.dayData){
-        this.timeStamps = this.default;
-        console.log(this.default);
-        this.status = true;
-      }
-      else {
-        this.timeStamps = this.default;
-        this.status = false;
-      }
-    }
-  }
-  // mounted() {
-  //     if (this.dayData){
-  //         this.timeStamps = this.dayData.timeStamps;
-  //         this.show = true;
-  //     }
-  // },
+  created() {
+    console.log(this.blockers, this.day);
+  },
 };
 </script>
 
@@ -95,11 +101,11 @@ export default {
 .time-stamps {
   display: flex;
 }
-button{
+button {
   border: none;
   margin-left: 20px;
   text-decoration: underline;
-  &:hover{
+  &:hover {
     cursor: pointer;
   }
 }
