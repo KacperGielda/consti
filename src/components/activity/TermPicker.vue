@@ -27,10 +27,10 @@ export default {
   props: ["title", "day-data", "day", "id"],
   data() {
     return {
-      timeStamps: this.dayData ? this.dayData.timeStamps : [0, 0],
+      timeStamps: this.dayData ? this.dayData.timeStamps : [0, 1],
       default: this.dayData
         ? JSON.parse(JSON.stringify(this.dayData.timeStamps))
-        : [0, 0],
+        : [0, 1],
       show: this.dayData ? true : false,
       status: "",
     };
@@ -47,10 +47,10 @@ export default {
       handler(newValue) {
         let isOcupied = false;
         this.blockers.forEach((el) => {
-          if (newValue[0] < el[0] && newValue[1] > el[1]-1) isOcupied = true;
+          if (newValue[0] < el[0] && newValue[1] > el[1] - 1) isOcupied = true;
         });
-        if (isOcupied || (newValue[0] > newValue[1])){
-          console.log('error');
+        if (isOcupied || newValue[0] >= newValue[1]) {
+          console.log("error");
           this.status = "error";
           return;
         }
@@ -66,10 +66,13 @@ export default {
       if (this.dayData && newValue == false) this.status = "changed";
       else if (!this.dayData && newValue == true) this.status = "changed";
     },
-    status(newValue){
-      if(newValue == 'error') this.$emit('update:error', true);
-      else this.$emit('update:error', false);
-    }
+    status(newValue) {
+      this.$emit("update:value", {
+        timeStamps: [...this.timeStamps],
+        status: newValue,
+        show: this.show,
+      });
+    },
   },
   methods: {
     undo() {

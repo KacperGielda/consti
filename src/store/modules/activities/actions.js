@@ -5,6 +5,10 @@ const getSubTaskIndex = (activity, id) => {
   return activity.subTasks.findIndex((task) => task.id == id);
 };
 
+// const calcTaskProgres = (activity){
+//   activity
+// }
+
 export default {
   addNewSubTask({ state }, payload) {
     const activity = findActivityById(state, payload.id);
@@ -47,4 +51,14 @@ export default {
     console.log(state.activities);
     return activity.id;
   },
+  updateActiveTasks({ state }, payload) {
+    const newDayPlan = state.activeTasks[payload.weekDay].filter(el => el.id != payload.id);
+    if (payload.show) newDayPlan.push({ id: payload.id, timeStamps: payload.timeStamps });
+    newDayPlan.sort((a, b) => {
+      if (a.timeStamps[0] < b.timeStamps[0])
+        return -1;
+      else return 1;
+    })
+    state.activeTasks[payload.weekDay] = newDayPlan;
+  }
 };
