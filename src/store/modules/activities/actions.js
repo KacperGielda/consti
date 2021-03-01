@@ -5,8 +5,15 @@ const getSubTaskIndex = (activity, id) => {
   return activity.subTasks.findIndex((task) => task.id == id);
 };
 
-// const calcTaskProgres = (activity){
-//   activity
+// const calcTaskProgres = (activity) => {
+//   const tasks = activity.subTasks.length();
+//   let doneCounter = 0;
+//   activity.subTasks.forEach(
+//     el => {
+//       if (el.status == "done") doneCounter++;
+//     }
+//   );
+//   return tasks / doneCounter * 100;
 // }
 
 export default {
