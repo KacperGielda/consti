@@ -1,16 +1,31 @@
 <template>
   <div class="activity">
     <header>
-      <div class="title">
-        {{ activity.title }}
+      <div v-if="!titleEditMode" class="title" @click="changeTitle">
+        {{ title }}
       </div>
+      <input
+        v-if="titleEditMode"
+        type="text"
+        v-model="newTitle"
+        @keypress.enter="changeTitle"
+        :placeholder="placeholder"
+      />
       <div class="progress">{{ activity.progress }}%</div>
       <div class="options">
         <ion-icon name="calendar-outline" class="calendar"></ion-icon>
       </div>
     </header>
     <form>
-      <term-picker v-for="(day, index) in weekDays" :key="index" :title="day" :day-data="terms[index]" :day="index" :id="id" v-model:error='error'></term-picker>
+      <term-picker
+        v-for="(day, index) in weekDays"
+        :key="index"
+        :title="day"
+        :day-data="terms[index]"
+        :day="index"
+        :id="id"
+        v-model:error="error"
+      ></term-picker>
       <base-button v-if="!error">Zapisz</base-button>
     </form>
     <section>
@@ -42,6 +57,10 @@ export default {
         "Niedziela",
       ],
       error: null,
+      titleEditMode: false,
+      newTitle: "",
+      placeholder: "",
+      title: "",
     };
   },
   computed: {
@@ -53,8 +72,28 @@ export default {
       return this.termsById(Number(this.id));
     },
   },
+  watch: {
+    activityTitle(newValue) {
+      this.newTitle = newValue;
+    },
+  },
   mounted() {
     // console.log(this.terms);
+    this.newTitle = this.activity.title;
+    this.title =
+      this.activity.title !== ""
+        ? this.activity.title
+        : "Kliknij aby dodać tytuł";
+  },
+  methods: {
+    changeTitle() {
+      console.log("ada");
+      if (this.titleEditMode) {
+        this.title = this.newTitle;
+        this.activity.title = this.newTitle;
+      }
+      this.titleEditMode = !this.titleEditMode;
+    },
   },
 };
 </script>
@@ -81,6 +120,7 @@ export default {
     padding: 20px;
     .title {
       margin-right: 50px;
+      font-size: 18px;
     }
     .progress {
       margin-right: auto;
@@ -99,6 +139,14 @@ export default {
           color: $teal;
         }
       }
+    }
+    input {
+      margin-right: 20px;
+      font-size: 18px;
+      background: none;
+      color: $white;
+      border: none;
+      border-bottom: solid $teal 1px;
     }
   }
   form {

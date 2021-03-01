@@ -11,10 +11,13 @@
     <h2>Nie Aktywne</h2>
     <ul v-if="notActiveExist">
       <li v-for="activity in activities.notActive" :key="activity.id">
-        <activity-item></activity-item>
+        <activity-item :activity="activity"></activity-item>
       </li>
     </ul>
     <h3 v-else><activity-item :activity="null"></activity-item></h3>
+    <div class="add" @click="createActivity">
+      <ion-icon name="add-circle-outline"></ion-icon>
+    </div>
   </div>
 </template>
 
@@ -32,6 +35,13 @@ export default {
     },
     notActiveExist() {
       return this.activities.notActive.length > 0;
+    },
+  },
+  methods: {
+    createActivity() {
+      this.$store
+        .dispatch("activities/createActivity")
+        .then((res) => this.$router.push({ path: `/activities/${res}` }));
     },
   },
 };
@@ -60,5 +70,23 @@ h2 {
   align-items: center;
   border-radius: 20px;
   color: $white;
+}
+.add {
+  position: fixed;
+  background-color: $teal;
+  width: 100px;
+  height: 100px;
+  right: 50px;
+  bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  font-size: 70px;
+  color: white;
+  &:hover {
+    background-color: $teal-dark;
+    cursor: pointer;
+  }
 }
 </style>
