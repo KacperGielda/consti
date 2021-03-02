@@ -42,6 +42,17 @@ export default {
     },
   },
   watch: {
+    dayData:{
+      deep:true,
+      handler(newValue){
+        this.timeStamps = newValue ? newValue.timeStamps : [0, 1];
+      this.default = newValue
+        ? JSON.parse(JSON.stringify(newValue.timeStamps))
+        : [0, 1];
+      this.show = newValue ? true : false;
+      this.status = "";
+      }
+    },
     timeStamps: {
       deep: true,
       handler(newValue) {

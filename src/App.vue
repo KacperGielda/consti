@@ -2,8 +2,13 @@
 
   <teleport to="body">  
       <base-dialog>
-        <template #actions>
+        <template v-if="dialogType == 'default'" #actions>
           <base-button @click="hideDialog">OK</base-button>
+        </template>
+        <template v-else #actions>
+          <p>Deaktywować?</p>
+          <base-button @click="deactivateActivity">Tak</base-button>
+          <base-button @click="hideDialog" >Nie</base-button>
         </template>
       </base-dialog>
   </teleport>
@@ -11,18 +16,21 @@
   <the-header></the-header>
   <div class="background">
   </div>
-  <!-- <transition name="routes" mode="out-in"> -->
-    <router-view/>
-  <!-- </transition> -->
+    <router-view  v-slot="{ Component }">
+      <transition name="routes" mode="out-in" >
+         <component :is="Component" />
+      </transition>
+    </router-view>
 </template>
 
 <script>
 import TheHeader from "./components/layout/TheHeader.vue";
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 export default {
   components: { TheHeader },
   methods:{
-    ...mapMutations('dialog',['hideDialog']),
+    ...mapMutations('dialog',['hideDialog', 'dialogType']),
+    ...mapActions('dialog',['deactivateActivity']),
   }
 };
 </script>

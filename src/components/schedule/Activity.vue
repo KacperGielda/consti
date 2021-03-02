@@ -1,16 +1,22 @@
 <template>
   <div class="activity">
-    <header>
+    <header @click="togleTasksVivsibility">
       <div class="time-stamps">
         {{ timeStampsText }}
       </div>
-      <div class="title" @click="togleTasksVivsibility">
+      <div class="title">
         {{ activity.title }}
       </div>
+      <div class="progress">{{ activity.progress }}%</div>
     </header>
-    <section v-show="showTasks">
-      <base-task-list :sub-tasks="activity.subTasks" :activity-id="id"></base-task-list>
-    </section>
+    <transition name="slide">
+      <section v-show="showTasks">
+        <base-task-list
+          :sub-tasks="activity.subTasks"
+          :activity-id="id"
+        ></base-task-list>
+      </section>
+    </transition>
   </div>
 </template>
 
@@ -52,6 +58,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../assets/Colors.scss";
+@import "../../assets/Animations.scss";
 .activity {
   width: 700px;
   max-width: 90vw;
@@ -68,10 +75,10 @@ export default {
     box-shadow: 2px 2px rgba($black, 0.1);
     .title {
       font-size: 20px;
-      &:hover {
-        cursor: pointer;
-      }
     }
+  }
+  &:hover {
+    cursor: pointer;
   }
 }
 </style>

@@ -5,16 +5,18 @@ const getSubTaskIndex = (activity, id) => {
   return activity.subTasks.findIndex((task) => task.id == id);
 };
 
-// const calcTaskProgres = (activity) => {
-//   const tasks = activity.subTasks.length();
-//   let doneCounter = 0;
-//   activity.subTasks.forEach(
-//     el => {
-//       if (el.status == "done") doneCounter++;
-//     }
-//   );
-//   return tasks / doneCounter * 100;
-// }
+const calcTaskProgres = (activity) => {
+  const tasks = activity.subTasks.length;
+  let doneCounter = 0;
+  activity.subTasks.forEach(
+    el => {
+      if (el.status == "done") doneCounter++;
+    }
+  );
+  console.log(tasks, doneCounter);
+  if (doneCounter === 0) return 0;
+  return doneCounter / tasks * 100;
+}
 
 export default {
   addNewSubTask({ state }, payload) {
@@ -25,9 +27,9 @@ export default {
       desc: payload.desc,
       status: "to-do",
     });
-    console.log(activity.subTasks);
+    calcTaskProgres(activity);
   },
-  changeSubTaskStatus({ state }, payload) {
+  changeSubTaskStatus({ state, commit, }, payload) {
     const activity = findActivityById(state, payload.activityId);
     const subTask =
       activity.subTasks[getSubTaskIndex(activity, payload.subTaskId)];
@@ -41,6 +43,10 @@ export default {
       case "done":
         subTask.status = "to-do";
         break;
+    }
+    activity.progress = calcTaskProgres(activity);
+    if(activity.progress === 100){
+      commit('dialog/displayDialog', {msg: `Zadanie ${activity.title} jest już w pełni ukończone.`, title: 'Zadanie ukończone', type:'activityEnd', activity: activity.id}, {root: true});
     }
   },
   createActivity({ state }) {
@@ -67,5 +73,24 @@ export default {
       else return 1;
     })
     state.activeTasks[payload.weekDay] = newDayPlan;
+  },
+  deactivate({state}, id){
+    id = Number(id);
+    const activity = findActivityById(state, id);
+    activity.isActive = false;
+    console.log(state.activeTasks);
+    const newActiveTasks = [];
+    state.activeTasks.forEach(weekDay => {
+      weekDay = weekDay.filter(el => el.id !== id);
+      newActiveTasks.push(weekDay);
+    });
+    state.activeTasks = newActiveTasks;
+  },
+  resetSubTasks({state}, id){
+    const activity = findActivityById(state, id);
+    activity.subTasks.forEach(subTask => {
+      subTask.status = "to-do";
+    });
+    activity.progress = 0;
   }
 };

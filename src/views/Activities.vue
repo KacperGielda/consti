@@ -15,9 +15,11 @@
       </li>
     </ul>
     <h3 v-else><activity-item :activity="null"></activity-item></h3>
-    <div class="add" @click="createActivity">
-      <ion-icon name="add-circle-outline"></ion-icon>
-    </div>
+    <teleport to="body">
+      <div class="add" @click="createActivity">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </div>
+    </teleport>
   </div>
 </template>
 

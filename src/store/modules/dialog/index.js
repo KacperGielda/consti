@@ -9,6 +9,8 @@ export default {
             isDialogShowedUp: false,
             title: "",
             msg: "",
+            type: "default",
+            activityId: null,
         };
     },
     mutations,

@@ -24,8 +24,8 @@ export default {
                 if (activity) return activity;
                 else return null;
             });
-            return JSON.parse(JSON.stringify(term)); //?????????
-            // return term;
+            // return JSON.parse(JSON.stringify(term)); //?????????
+            return term;
         };
     },
     ocupiedTerms(state) {

@@ -25,7 +25,7 @@ import { mapGetters, mapMutations } from "vuex";
 export default {
   props: ["title", "msg"],
   computed: {
-    ...mapGetters("dialog", ["isDialogShowedUp", "dialogTitle", "dialogMsg"]),
+    ...mapGetters("dialog", ["isDialogShowedUp", "dialogTitle", "dialogMsg",]),
   },
   methods: {
     ...mapMutations("dialog", ["hideDialog"]),

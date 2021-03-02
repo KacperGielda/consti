@@ -11,7 +11,7 @@
         @keypress.enter="changeTitle"
         :placeholder="placeholder"
       />
-      <div class="progress">{{ activity.progress }}%</div>
+      <div class="progress">{{ activity.progress }}% <base-button @click="resetSubTasks(id)">Resetuj</base-button></div>
       <div class="options">
         <ion-icon name="calendar-outline" class="calendar"></ion-icon>
       </div>
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import TermPicker from "../components/activity/TermPicker";
 export default {
   props: ["id"],
@@ -70,7 +70,8 @@ export default {
       return this.activityById(Number(this.id));
     },
     terms() {
-      return this.termsById(Number(this.id));
+      console.log('dupa');
+      return JSON.parse(JSON.stringify(this.termsById(Number(this.id))));
     },
   },
   watch: {
@@ -106,6 +107,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('activities',['resetSubTasks']),
     changeTitle() {
       console.log("ada");
       if (this.titleEditMode) {

@@ -7,5 +7,8 @@ export default {
     },
     dialogTitle(state){
         return state.title;
+    },
+    dialogType(state){
+        return state.type;
     }
 }
