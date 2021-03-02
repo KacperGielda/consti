@@ -17,6 +17,7 @@
         :id="subTask.id"
         :desc="subTask.desc"
         :status="subTask.status"
+        :parent-id="activityId"
         @change-status="changeStatus(subTask.id)"
       />
     </li>

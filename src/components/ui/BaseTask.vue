@@ -1,7 +1,8 @@
 <template>
-  <div :class="`task-container ${status}`">
+  <div :class="`task-container ${status}`" @click="toggleDeleteBtn">
+    <div class="delete" v-show="showDeleteBtn" @click.stop="deleteSubTask(parentId, id)"><ion-icon name="trash-outline" class="trash"></ion-icon></div>
     <div class="desc">{{ desc }}</div>
-    <div class="status" @click="$emit('change-status')">
+    <div class="status" @click.stop="$emit('change-status')">
       {{ status }}
     </div>
   </div>
@@ -9,7 +10,20 @@
 
 <script>
 export default {
-  props: ["desc", "id", "status"],
+  props: ["desc", "id", "status", "parent-id"],
+  data(){
+    return{
+      showDeleteBtn: false,
+    }
+  },
+    methods: {
+      toggleDeleteBtn(){
+        this.showDeleteBtn = !this.showDeleteBtn;
+      },
+      deleteSubTask(activityId, id){
+        this.$store.dispatch('activities/deleteSubTask', {activityId, id});
+      }
+    },
 };
 </script>
 
@@ -26,16 +40,27 @@ export default {
   overflow: hidden;
   color: white;
   box-shadow: 2px 2px rgba($black, 0.1);
+  .delete{
+    font-size: 30px;
+    padding-left: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    &:hover{
+      color: $red;
+      cursor: pointer;
+    }
+  }
   .desc {
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding-left: 20px;
+    margin-left: 10px;
   }
   .status {
-    width: 200px;
+    min-width: 150px;
     height: 100%;
     border-radius: 20px;
     background-color: $white;

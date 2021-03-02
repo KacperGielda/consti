@@ -123,4 +123,8 @@ export default {
             { root: true }
         );
     },
+    deleteSubTask({state}, payload){
+      const activity = findActivityById(state, payload.activityId);
+      activity.subTasks = activity.subTasks.filter(el => el.id != payload.id);
+    }
 };
