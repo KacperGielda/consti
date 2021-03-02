@@ -38,6 +38,7 @@ export default {
         padding: 10px 20px;
         border-radius: 20px;
         margin: 10px;
+        outline: none;
         &:hover,&:active{
             cursor: pointer;
             background-color: $teal-dark;

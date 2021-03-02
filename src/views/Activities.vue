@@ -46,6 +46,14 @@ export default {
         .then((res) => this.$router.push({ path: `/activities/${res}` }));
     },
   },
+  mounted(){
+    this.activities.active.forEach(el => {
+      if (el.title == '') this.$store.dispatch('activities/deleteActivity', el.id);
+    });
+    this.activities.notActive.forEach(el => {
+      if (el.title == '') this.$store.dispatch('activities/deleteActivity', el.id);
+    });
+  }
 };
 </script>
 
@@ -86,6 +94,13 @@ h2 {
   border-radius: 100%;
   font-size: 70px;
   color: white;
+  @media (max-width: 500px) {
+    width: 75px;
+    height: 75px;
+    right: 25px;
+    bottom: 25px;
+    font-size: 50px;
+  }
   &:hover {
     background-color: $teal-dark;
     cursor: pointer;

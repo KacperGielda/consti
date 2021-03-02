@@ -34,7 +34,10 @@ export default {
     },
     methods:{
         addNewSubTask(){
-           this.$store.dispatch('activities/addNewSubTask', {id: this.activityId, desc: this.newTaskDesc});
+          if (this.newTaskDesc != ""){
+            this.$store.dispatch('activities/addNewSubTask', {id: this.activityId, desc: this.newTaskDesc});
+          }
+          this.newTaskDesc = "";
        },
        changeStatus(subTaskId){
            this.$store.dispatch('activities/changeSubTaskStatus', {subTaskId, activityId: this.activityId});

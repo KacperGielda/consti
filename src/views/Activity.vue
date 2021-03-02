@@ -6,12 +6,17 @@
       </div>
       <input
         v-if="titleEditMode"
+        v-focus
         type="text"
         v-model="newTitle"
         @keypress.enter="changeTitle"
         :placeholder="placeholder"
+        @focusout="changeTitle"
       />
-      <div class="progress">{{ activity.progress }}% <base-button @click="resetSubTasks(id)">Resetuj</base-button></div>
+      <div class="progress">
+        {{ activity.progress }}%
+        <base-button @click="resetSubTasks(id)">Resetuj</base-button>
+      </div>
       <div class="options" @click="deleteActivity(id)">
         <ion-icon name="trash-outline" class="trash"></ion-icon>
       </div>
@@ -42,6 +47,15 @@ import { mapGetters, mapActions } from "vuex";
 import TermPicker from "../components/activity/TermPicker";
 export default {
   props: ["id"],
+  directives: {
+    focus: {
+      // directive definition
+      mounted(el) {
+        el.focus();
+      },
+    },
+  },
+
   components: {
     TermPicker,
   },
@@ -70,7 +84,7 @@ export default {
       return this.activityById(Number(this.id));
     },
     terms() {
-      console.log('dupa');
+      console.log("dupa");
       return JSON.parse(JSON.stringify(this.termsById(Number(this.id))));
     },
   },
@@ -107,14 +121,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions('activities',['resetSubTasks','deleteActivity']),
+    ...mapActions("activities", ["resetSubTasks", "deleteActivity"]),
     changeTitle() {
-      console.log("ada");
-      if (this.titleEditMode) {
-        this.title = this.newTitle;
-        this.activity.title = this.newTitle;
-      }
       this.titleEditMode = !this.titleEditMode;
+      // console.log(this.$refs);
+      if (this.newTitle) {
+        if (this.titleEditMode) {
+          this.title = this.newTitle;
+          this.activity.title = this.newTitle;
+        }
+      } else this.newTitle = "";
     },
     save() {
       const changedTermsIndexes = [];
@@ -189,6 +205,7 @@ export default {
       color: $white;
       border: none;
       border-bottom: solid $teal 1px;
+      outline: none;
     }
   }
   form {

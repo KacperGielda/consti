@@ -1,4 +1,4 @@
-import router from '../../../router/index.js';
+import router from "../../../router/index.js";
 
 const findActivityById = (state, id) => {
     return state.activities.find((task) => task.id == id);
@@ -15,7 +15,7 @@ const calcTaskProgres = (activity) => {
     });
     console.log(tasks, doneCounter);
     if (doneCounter === 0) return 0;
-    return (doneCounter / tasks) * 100;
+    return Math.round((doneCounter / tasks) * 100);
 };
 
 export default {
@@ -27,7 +27,7 @@ export default {
             desc: payload.desc,
             status: "to-do",
         });
-        calcTaskProgres(activity);
+        activity.progress = calcTaskProgres(activity);
     },
     changeSubTaskStatus({ state, commit, dispatch }, payload) {
         const activity = findActivityById(state, payload.activityId);
@@ -76,7 +76,11 @@ export default {
     },
     updateActiveTasks({ state }, payload) {
         const newDayPlan = state.activeTasks[payload.weekDay].filter((el) => el.id != payload.id);
-        if (payload.show) newDayPlan.push({ id: payload.id, timeStamps: payload.timeStamps });
+        const activity = findActivityById(state, payload.id);
+        if (payload.show) {
+            activity.isActive = true;
+            newDayPlan.push({ id: payload.id, timeStamps: payload.timeStamps });
+        }
         newDayPlan.sort((a, b) => {
             if (a.timeStamps[0] < b.timeStamps[0]) return -1;
             else return 1;
@@ -103,28 +107,32 @@ export default {
         activity.progress = 0;
     },
     deleteActivity({ state, commit, dispatch }, id) {
+        const del = () => {
+            router.push("/activities/");
+            for (let weekDay = 0; weekDay < 7; weekDay++) {
+                dispatch("updateActiveTasks", { show: false, id, weekDay });
+            }
+            state.activities = state.activities.filter((el) => el.id != id);
+        };
         id = Number(id);
         const activity = findActivityById(state, id);
-        commit(
-            "dialog/displayDialog",
-            {
-                msg: `Czy napewno chesz usunąć ${activity.title}?`,
-                title: "Usuwanie",
-                type: "choice",
-                activity: activity.id,
-                callback: () => {
-                  router.push('/activities/');
-                  for (let weekDay = 0; weekDay < 7; weekDay++ ){
-                    dispatch('updateActiveTasks', {show: false, id, weekDay});
-                  }
-                  state.activities = state.activities.filter(el => el.id != id);
+        if (activity.title == "") del();
+        else
+            commit(
+                "dialog/displayDialog",
+                {
+                    msg: `Czy napewno chesz usunąć ${activity.title}?`,
+                    title: "Usuwanie",
+                    type: "choice",
+                    activity: activity.id,
+                    callback: del,
                 },
-            },
-            { root: true }
-        );
+                { root: true }
+            );
     },
-    deleteSubTask({state}, payload){
-      const activity = findActivityById(state, payload.activityId);
-      activity.subTasks = activity.subTasks.filter(el => el.id != payload.id);
-    }
+    deleteSubTask({ state }, payload) {
+        const activity = findActivityById(state, payload.activityId);
+        activity.subTasks = activity.subTasks.filter((el) => el.id != payload.id);
+        activity.progress = calcTaskProgres(activity);
+    },
 };

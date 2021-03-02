@@ -1,9 +1,15 @@
 <template>
   <div :class="`task-container ${status}`" @click="toggleDeleteBtn">
-    <div class="delete" v-show="showDeleteBtn" @click.stop="deleteSubTask(parentId, id)"><ion-icon name="trash-outline" class="trash"></ion-icon></div>
+    <div
+      class="delete"
+      v-show="showDeleteBtn"
+      @click.stop="deleteSubTask(parentId, id)"
+    >
+      <ion-icon name="trash-outline" class="trash"></ion-icon>
+    </div>
     <div class="desc">{{ desc }}</div>
     <div class="status" @click.stop="$emit('change-status')">
-      {{ status }}
+      {{ text }}
     </div>
   </div>
 </template>
@@ -11,19 +17,31 @@
 <script>
 export default {
   props: ["desc", "id", "status", "parent-id"],
-  data(){
-    return{
+  data() {
+    return {
       showDeleteBtn: false,
-    }
+    };
   },
-    methods: {
-      toggleDeleteBtn(){
-        this.showDeleteBtn = !this.showDeleteBtn;
-      },
-      deleteSubTask(activityId, id){
-        this.$store.dispatch('activities/deleteSubTask', {activityId, id});
+  computed: {
+    text() {
+      switch (this.status) {
+        case "to-do":
+          return "Do zrobiena";
+        case "in-progress":
+          return "W trakcie pracy";
+        default:
+          return "zrobione";
       }
     },
+  },
+  methods: {
+    toggleDeleteBtn() {
+      this.showDeleteBtn = !this.showDeleteBtn;
+    },
+    deleteSubTask(activityId, id) {
+      this.$store.dispatch("activities/deleteSubTask", { activityId, id });
+    },
+  },
 };
 </script>
 
@@ -40,13 +58,13 @@ export default {
   overflow: hidden;
   color: white;
   box-shadow: 2px 2px rgba($black, 0.1);
-  .delete{
+  .delete {
     font-size: 30px;
     padding-left: 20px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    &:hover{
+    &:hover {
       color: $red;
       cursor: pointer;
     }
@@ -67,7 +85,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    &:hover{
+    &:hover {
       cursor: pointer;
     }
   }
