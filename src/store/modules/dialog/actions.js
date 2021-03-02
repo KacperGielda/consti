@@ -1,6 +1,6 @@
 export default {
-    deactivateActivity({state, dispatch}){ 
+    dialogYes({state}){ 
         state.isDialogShowedUp = false;
-        dispatch('activities/deactivate', state.activityId, {root:true})
+        state.callback();
     }
 }

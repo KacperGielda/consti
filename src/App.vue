@@ -6,8 +6,7 @@
           <base-button @click="hideDialog">OK</base-button>
         </template>
         <template v-else #actions>
-          <p>Deaktywować?</p>
-          <base-button @click="deactivateActivity">Tak</base-button>
+          <base-button @click="dialogYes">Tak</base-button>
           <base-button @click="hideDialog" >Nie</base-button>
         </template>
       </base-dialog>
@@ -30,7 +29,7 @@ export default {
   components: { TheHeader },
   methods:{
     ...mapMutations('dialog',['hideDialog', 'dialogType']),
-    ...mapActions('dialog',['deactivateActivity']),
+    ...mapActions('dialog',['dialogYes']),
   }
 };
 </script>

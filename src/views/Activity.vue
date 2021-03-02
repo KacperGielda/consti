@@ -12,8 +12,8 @@
         :placeholder="placeholder"
       />
       <div class="progress">{{ activity.progress }}% <base-button @click="resetSubTasks(id)">Resetuj</base-button></div>
-      <div class="options">
-        <ion-icon name="calendar-outline" class="calendar"></ion-icon>
+      <div class="options" @click="deleteActivity(id)">
+        <ion-icon name="trash-outline" class="trash"></ion-icon>
       </div>
     </header>
     <form @submit.prevent="save">
@@ -107,7 +107,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('activities',['resetSubTasks']),
+    ...mapActions('activities',['resetSubTasks','deleteActivity']),
     changeTitle() {
       console.log("ada");
       if (this.titleEditMode) {
@@ -168,7 +168,7 @@ export default {
       margin-right: auto;
     }
     .options {
-      .calendar {
+      .trash {
         width: 40px;
         height: 40px;
         display: flex;
@@ -178,7 +178,7 @@ export default {
         margin-right: 10px;
         &:hover {
           cursor: pointer;
-          color: $teal;
+          color: $red;
         }
       }
     }

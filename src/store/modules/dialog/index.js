@@ -11,6 +11,7 @@ export default {
             msg: "",
             type: "default",
             activityId: null,
+            callback: null,
         };
     },
     mutations,
