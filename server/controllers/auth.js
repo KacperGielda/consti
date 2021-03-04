@@ -15,10 +15,11 @@ module.exports = {
     });
     },
     loginPOST(req, res){
-        const {userName} = req.body;
+        const {userId} = req.body;
         // console.log(req);
-        const accessToken = jwt.sign(userName, process.env.AccessTokenSecret);
-        res.json({accessToken});
+        const accessToken = jwt.sign({userId}, process.env.AccessTokenSecret, {expiresIn: '15s'});
+        const refreshToken = jwt.sign({userId}, process.env.RefreshTokenSecret);
+        res.json({accessToken, refreshToken});
     },
     registerPOST(req, res){
 

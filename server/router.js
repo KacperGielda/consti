@@ -1,12 +1,13 @@
 const { Router } = require("express");
 
+const auth = require('./controllers/auth.js');
+
 const router = Router();
 
-router.get('/', (req, res)=>{
+router.get('/', auth.authenticateToken ,(req, res)=>{
     res.send("siemson");
 });
 
-const auth = require('./controllers/auth.js');
 router.post('/login', auth.loginPOST )
 router.post('/Register', auth.registerPOST )
 
