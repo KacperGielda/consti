@@ -5,7 +5,7 @@ const auth = require('./controllers/auth.js');
 const router = Router();
 
 router.get('/', auth.authenticateToken ,(req, res)=>{
-    res.send("siemson");
+    res.send("siemson" + req.user);
 });
 
 router.post('/login', auth.login )

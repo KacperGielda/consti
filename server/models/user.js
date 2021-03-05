@@ -51,7 +51,7 @@ const DayActivitySchema= new mongoose.Schema({
 })
 
 const userSchema = new mongoose.Schema({
-    name: {
+    login: {
         type: String,
         required: true,
         unique: true,

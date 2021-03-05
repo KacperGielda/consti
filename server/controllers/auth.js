@@ -1,7 +1,8 @@
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-// const mongoose = require('mongoose');
 const RefreshToken = require("../models/refreshToken.js");
 const User = require("../models/user");
+const {objectId} = require("mongoose");
 require("dotenv").config();
 
 const generateAccessToken = (userId)=>{
@@ -14,27 +15,33 @@ const generateRefreshToken = (userId, callback)=>{
 
 module.exports = {
     authenticateToken(req, res, next){
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-    jwt.verify(token, process.env.AccessTokenSecret, (err,user)=>{
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+        if (!token) return res.sendStatus(401);
+        jwt.verify(token, process.env.AccessTokenSecret, async(err,data)=>{
+            if (err) return res.sendStatus(403);
+            req.user = await User.findById(data.userId).exec();
+            next();
     });
     },
-    login(req, res,){
-        const {userId} = req.body;
-        const accessToken = generateAccessToken(userId);
-        generateRefreshToken(userId, (err, refreshToken) => {
-            if(err && !refreshToken) return res.sendStatus(401);
+    async login(req, res,){
+        const {login, password} = req.body;
+        const user = await User.findOne({login}).exec();
+        if (!user || !(await bcrypt.compare(password, user.password))) return res.sendStatus(403);
+        const accessToken = generateAccessToken(user._id);
+        generateRefreshToken(user._id, (err, refreshToken) => {
+            if(err && !refreshToken) return res.sendStatus(403);
             return res.json({accessToken, refreshToken});
         });
         
     },
     async register(req, res){
-        const user = await User.create(req.body);
-        const accessToken = generateAccessToken(user._id);
+        const {password, ...body} = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(hashedPassword);
+        const user = await User.create({password: hashedPassword, ...body});
+        accessToken = generateAccessToken(user._id);
         generateRefreshToken(user._id, (err, refreshToken) => {
             if(err && !refreshToken) return res.sendStatus(401);
             return res.json({accessToken, refreshToken});
