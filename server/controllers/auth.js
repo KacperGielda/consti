@@ -1,10 +1,15 @@
 const jwt = require('jsonwebtoken');
 // const mongoose = require('mongoose');
 const RefreshToken = require("../models/refreshToken.js");
+const User = require("../models/user");
 require("dotenv").config();
 
 const generateAccessToken = (userId)=>{
     return jwt.sign({userId}, process.env.AccessTokenSecret, {expiresIn: '25s'});
+}
+const generateRefreshToken = (userId, callback)=>{
+    const refreshToken = jwt.sign({userId}, process.env.RefreshTokenSecret);
+    RefreshToken.create({token: refreshToken}, err => callback(err, refreshToken));
 }
 
 module.exports = {
@@ -18,20 +23,23 @@ module.exports = {
         next();
     });
     },
-    login(req, res){
+    login(req, res,){
         const {userId} = req.body;
-        // console.log(req);
-        // const accessToken = jwt.sign({userId}, process.env.AccessTokenSecret, {expiresIn: '15s'});
         const accessToken = generateAccessToken(userId);
-        const refreshToken = jwt.sign({userId}, process.env.RefreshTokenSecret);
-        RefreshToken.create({token: refreshToken}, (err)=>{
+        generateRefreshToken(userId, (err, refreshToken) => {
             if(err && !refreshToken) return res.sendStatus(401);
             return res.json({accessToken, refreshToken});
-            
-        })
+        });
+        
     },
-    register(req, res){
-
+    async register(req, res){
+        const user = await User.create(req.body);
+        const accessToken = generateAccessToken(user._id);
+        generateRefreshToken(user._id, (err, refreshToken) => {
+            if(err && !refreshToken) return res.sendStatus(401);
+            return res.json({accessToken, refreshToken});
+        });
+        
     },
     async refreshToken(req, res){
         const {refreshToken} = req.body;    
