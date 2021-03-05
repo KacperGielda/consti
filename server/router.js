@@ -8,7 +8,9 @@ router.get('/', auth.authenticateToken ,(req, res)=>{
     res.send("siemson");
 });
 
-router.post('/login', auth.loginPOST )
-router.post('/Register', auth.registerPOST )
+router.post('/login', auth.login )
+router.post('/Register', auth.register )
+router.post('/token', auth.refreshToken)
+router.delete("/logout", auth.logout)
 
 module.exports = router;
