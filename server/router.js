@@ -1,8 +1,9 @@
 const { Router } = require("express");
-const { authenticateToken } = require("./controllers/auth.js");
 
 const auth = require('./controllers/auth.js');
-const user = require("./models/user.js");
+const activities = require("./controllers/activities.js");
+const subTasks = require("./controllers/subTasks.js");
+
 
 const router = Router();
 
@@ -11,46 +12,24 @@ router.post('/register', auth.register )
 router.post('/token', auth.refreshToken)
 router.delete("/logout", auth.logout)
 
-router.get('/all', auth.authenticateToken, (req, res)=>{
-    res.json(req.user);
-});
+router.get('/all', auth.authenticateToken, (req, res)=>{res.json(req.user);});
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //activities
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/activities', auth.authenticateToken, (req,res)=>{
-    res.json(req.user.activities);
-});
-router.post('/activities', auth.authenticateToken, (req, res)=>{
-    const user = req.user;
-    user.activities.push(req.body);
-    user.save().then( user => {
-        if (!user) return res.sendStatus(404);
-        console.log("dupa");
-        res.sendStatus(201);
-    }
-    );
-});
-router.delete('/activities/:id', auth.authenticateToken, (req,res)=>{
-    const user = req.user;
-    const {id} = req.params;
-    user.activities = user.activities.filter(activity => activity.id != id);
-    user.save().then(user => {
-        if(!user) return res.sendStatus(404);
-        res.sendStatus(204);
-    });
+router.get('/activities', auth.authenticateToken, activities.getActivities);
+router.post('/activities', auth.authenticateToken, activities.addActivity);
+router.delete('/activities/:id', auth.authenticateToken, activities.deleteActivity);
+router.put('/activities/:id', auth.authenticateToken, activities.updateActivity);
 
-});
-router.put('/activities/:id', auth.authenticateToken, (req, res)=>{
-    const user = req.user;
-    const {id} = req.params;
-    const index = user.activities.findIndex(activity => activity.id == id);;
-    user.activities.set(index, {...req.body, id: Number(id)}); 
-    user.save({runValidators: false}).then(user => {
-        if(!user) return res.sendStatus(404);
-        res.sendStatus(204);
-    }); 
-});
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//activities / subTasks
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+router.post('/activities/:id/subtasks', auth.authenticateToken, subTasks.addSubTask);
+router.delete('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.deleteSubTask);
+router.put('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.updateSubTask);
+
 
 module.exports = router;
