@@ -1,12 +1,11 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const RefreshToken = require("../models/refreshToken.js");
 const User = require("../models/user");
-const {objectId} = require("mongoose");
 require("dotenv").config();
 
 const generateAccessToken = (userId)=>{
-    return jwt.sign({userId}, process.env.AccessTokenSecret, {expiresIn: '25s'});
+    return jwt.sign({userId}, process.env.AccessTokenSecret, {expiresIn: '15m'});
 }
 const generateRefreshToken = (userId, callback)=>{
     const refreshToken = jwt.sign({userId}, process.env.RefreshTokenSecret);
@@ -36,17 +35,18 @@ module.exports = {
         
     },
     async register(req, res){
-        const {password, ...body} = req.body;
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword);
-        const user = await User.create({password: hashedPassword, ...body});
-        accessToken = generateAccessToken(user._id);
-        generateRefreshToken(user._id, (err, refreshToken) => {
-            if(err && !refreshToken) return res.sendStatus(401);
-            return res.json({accessToken, refreshToken});
-        });
-        
+        const userInput = req.body;
+        let user;
+        try{
+            user = await User.create(userInput);    
+        } catch(err){
+            if (err) return res.json(err);
+        }
+            accessToken = generateAccessToken(user._id);
+            generateRefreshToken(user._id, (err, refreshToken) => {
+                if(err && !refreshToken) return res.sendStatus(401);
+                return res.json({accessToken, refreshToken});
+            });
     },
     async refreshToken(req, res){
         const {refreshToken} = req.body;    

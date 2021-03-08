@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
+var emailValidator = require("email-validator");
+const bcrypt = require('bcrypt');
 
 const subTaskSchema = new mongoose.Schema({
     id:{
         type: Number,
-        required: true,
-        unique: true,
+        required: true, 
+        unique: false,
     },
     desc:{
         type: String,
@@ -19,7 +22,8 @@ const subTaskSchema = new mongoose.Schema({
 const activitySchema = new mongoose.Schema({
     id: {
         type:Number,
-        required:"true",
+        required:true,
+        unique: false,
     },
     date: {
         type: Date,
@@ -44,17 +48,20 @@ const DayActivitySchema= new mongoose.Schema({
     id: {
         type:String,
         required:"true",
+        unique:"false",
     },
     Timestamps:{
         type: Array,
     }
-})
+},{_id: false})
 
 const userSchema = new mongoose.Schema({
     login: {
         type: String,
         required: true,
         unique: true,
+        minlength: 3,
+        maxlength: 18,
     },
     lastModyfied:{
         type: Date,
@@ -64,6 +71,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        validate(val){
+            return emailValidator.validate(val);
+        }
     },
     password: {
         type: String,
@@ -75,6 +85,20 @@ const userSchema = new mongoose.Schema({
     ],
     activities:[activitySchema]
 });
+
+userSchema.pre('save', function(next){
+    const user = this;
+    console.log(user);
+    if (!user.isModified('password')) return next();
+
+    bcrypt.hash(user.password, 10, (err, hash)=>{
+        if (err) return next(err);
+        user.password = hash;
+        next()
+    });
+});
+
+userSchema.plugin(uniqueValidator, { message: 'Podany {PATH} jest zajęty.' });
 
 
 module.exports = mongoose.model('user', userSchema );
