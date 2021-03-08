@@ -63,7 +63,7 @@ const userSchema = new mongoose.Schema({
         minlength: 3,
         maxlength: 18,
     },
-    lastModyfied:{
+    lastModified:{
         type: Date,
         default: new Date(),
     },
@@ -88,7 +88,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', function(next){
     const user = this;
-    console.log(user);
     if (!user.isModified('password')) return next();
 
     bcrypt.hash(user.password, 10, (err, hash)=>{
@@ -97,6 +96,7 @@ userSchema.pre('save', function(next){
         next()
     });
 });
+
 
 userSchema.plugin(uniqueValidator, { message: 'Podany {PATH} jest zajęty.' });
 
