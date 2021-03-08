@@ -1,6 +1,6 @@
 export default {
-    dialogYes({state}){ 
-        state.isDialogShowedUp = false;
-        state.callback();
+    dialogYes({state, dispatch, commit}){ 
+        commit('hideDialog');
+        dispatch('activities/delActivity',state.activityId, {root: true});
     }
 }

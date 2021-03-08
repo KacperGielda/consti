@@ -1,36 +1,34 @@
 <template>
-
-  <teleport to="body">  
-      <base-dialog>
-        <template v-if="dialogType == 'default'" #actions>
-          <base-button @click="hideDialog">OK</base-button>
-        </template>
-        <template v-else #actions>
-          <base-button @click="dialogYes">Tak</base-button>
-          <base-button @click="hideDialog" >Nie</base-button>
-        </template>
-      </base-dialog>
+  <teleport to="body">
+    <base-dialog>
+      <template v-if="dialogType == 'default'" #actions>
+        <base-button @click="hideDialog">OK</base-button>
+      </template>
+      <template v-else #actions>
+        <base-button @click="dialogYes">Tak</base-button>
+        <base-button @click="hideDialog">Nie</base-button>
+      </template>
+    </base-dialog>
   </teleport>
 
   <the-header></the-header>
-  <div class="background">
-  </div>
-    <router-view  v-slot="{ Component }">
-      <transition name="routes" mode="out-in" >
-         <component :is="Component" />
-      </transition>
-    </router-view>
+  <div class="background"></div>
+  <router-view v-slot="{ Component }">
+    <transition name="routes" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script>
 import TheHeader from "./components/layout/TheHeader.vue";
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations, mapActions } from "vuex";
 export default {
   components: { TheHeader },
-  methods:{
-    ...mapMutations('dialog',['hideDialog', 'dialogType']),
-    ...mapActions('dialog',['dialogYes']),
-  }
+  methods: {
+    ...mapMutations("dialog", ["hideDialog", "dialogType"]),
+    ...mapActions("dialog", ["dialogYes"]),
+  },
 };
 </script>
 <style lang="scss">
@@ -48,7 +46,7 @@ export default {
   overflow-x: hidden;
   min-height: 100vh;
 }
-body{
+body {
   width: 100%;
   min-height: calc(100vh - 50px);
   background-image: url("assets/pexels-sami-anas-5137655.jpg");

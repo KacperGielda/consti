@@ -108,7 +108,6 @@ export default {
     },
     deleteActivity({ state, commit, dispatch }, id) {
         const del = () => {
-            router.push("/activities/");
             for (let weekDay = 0; weekDay < 7; weekDay++) {
                 dispatch("updateActiveTasks", { show: false, id, weekDay });
             }
@@ -125,7 +124,6 @@ export default {
                     title: "Usuwanie",
                     type: "choice",
                     activity: activity.id,
-                    callback: del,
                 },
                 { root: true }
             );
@@ -135,4 +133,16 @@ export default {
         activity.subTasks = activity.subTasks.filter((el) => el.id != payload.id);
         activity.progress = calcTaskProgres(activity);
     },
+    delActivity({state, dispatch}, id){
+        console.log('asas', id);
+        for (let weekDay = 0; weekDay < 7; weekDay++) {
+            dispatch("updateActiveTasks", { show: false, id, weekDay });
+        }
+        state.activities = state.activities.filter((el) => el.id != id);
+        router.replace("/schedule");
+        setTimeout(() => {
+            router.replace("/activities");
+        }, 1);
+       
+    }
 };
