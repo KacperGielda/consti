@@ -50,7 +50,7 @@ const DayActivitySchema= new mongoose.Schema({
         required:"true",
         unique:"false",
     },
-    Timestamps:{
+    timeStamps:{
         type: Array,
     }
 },{_id: false})

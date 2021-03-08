@@ -3,6 +3,7 @@ const { Router } = require("express");
 const auth = require('./controllers/auth.js');
 const activities = require("./controllers/activities.js");
 const subTasks = require("./controllers/subTasks.js");
+const activeTasks = require("./controllers/activeTasks.js")
 
 
 const router = Router();
@@ -24,12 +25,17 @@ router.delete('/activities/:id', auth.authenticateToken, activities.deleteActivi
 router.put('/activities/:id', auth.authenticateToken, activities.updateActivity);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//activities / subTasks
+//subTasks
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.post('/activities/:id/subtasks', auth.authenticateToken, subTasks.addSubTask);
 router.delete('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.deleteSubTask);
 router.put('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.updateSubTask);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//activeTasks
+//////////////////////////////////////////////////////////////////////////////////////////////////
+router.get('/activetasks', auth.authenticateToken, activeTasks.getActiveTasks);
+router.put('/activetasks/:weekDay', auth.authenticateToken, activeTasks.updateActiveDay);
 
 module.exports = router;
