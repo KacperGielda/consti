@@ -1,6 +1,6 @@
 <template>
   <base-container title="Logowanie">
-    <form class="form-login" @submit.prevent="$store.commit('dialog/displayDialog', {msg: 'dupa dupadupadupadupa dupadupa dupa', title: 'Tytuł'})">
+    <form class="form-login" @submit.prevent="signIn">
       <base-input
         label="Login"
         id="login"
@@ -17,12 +17,15 @@
       <base-button>Zaloguj</base-button>
       <p>
         Nie posiadasz jeszcze konta? <span @click="$emit('change-mode')">Zarejestruj się</span>
+        <!-- Nie posiadasz jeszcze konta? <span @click="$store.dispatch('refreshToken')">Zarejestruj się</span> -->
       </p>
     </form>
   </base-container>
 </template>
 
 <script>
+import axios from "axios";
+import {mapMutations} from "vuex";
 export default {
   data() {
     return {
@@ -46,15 +49,35 @@ export default {
   },
   watch: {
     loginValue(val) {
-      if (val.length < 4 && val.length != 0) {
-        this.login.validity = "Login musi mieć przynajmniej 4 znaki";
-      } else this.login.validity = "";
+      if (val.length < 4 && val.length != 0) return this.login.validity = "Login musi mieć przynajmniej 4 znaki";
+      if (val.length > 18) return this.login.validity = "Login nie możę przekraczać 18 znaków";
+      
+      this.login.validity = "";
     },
     passwordValue(val) {
-      if (val.length < 4 && val.length != 0) {
-        this.password.validity = "Hasło musi mieć przynajmniej 4 znaki";
-      } else this.password.validity = "";
+      if (val.length < 6 && val.length != 0)return this.password.validity = "Hasło musi mieć przynajmniej 6 znaków";
+      if(val.length > 18) return this.password.validity = "Hasło nie możę przekraczać 18 znaków";
+      this.password.validity = "";
     },
+  },
+  methods:{
+    ...mapMutations(["setAccessToken", "setRefreshToken"]),
+    signIn(){
+      if(this.login.validity.length != 0 || this.password.validity.length != 0) return;
+      axios.post('api/login',{
+        login: this.loginValue,
+        password: this.passwordValue,
+      } ).then(res => {
+        const {refreshToken, accessToken} = res.data;
+        this.setRefreshToken(refreshToken);
+        this.setAccessToken(accessToken);
+        console.log(this.$store.getters["getTokens"]);
+      })
+      .catch(()=>{
+        this.$store.commit('dialog/displayDialog', {title: "Bład", msg:"Błędne dane logowania", type:'default'});
+        this.password.value = "";
+      });
+    }
   },
   name: "Home",
 };

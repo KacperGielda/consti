@@ -79,6 +79,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: false,
+        minlength: 6,
+        maxlength: 18,
     },
     activeTasks:[
 [DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],

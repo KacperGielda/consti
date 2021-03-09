@@ -12,7 +12,8 @@
             <router-link class="nav-link" to="/activities"><span @click="toggleNav">Aktywności</span></router-link>
           </li>
           <li>
-            <router-link class="nav-link" to="/"><span @click="toggleNav">Logowanie</span></router-link>
+            <router-link v-if="unLogged" class="nav-link" to="/"><span @click="toggleNav">Logowanie</span></router-link>
+            <div v-else class="nav-link" to="/"><span @click="logout">Wyloguj</span></div>
           </li>
         </ul>
       </nav>
@@ -23,6 +24,8 @@
 </template>
 
 <script>
+import axios from "axios";
+import {mapMutations} from "vuex";
 export default {
   data() {
     return {
@@ -30,10 +33,23 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(["setAccessToken", "setRefreshToken"]),
     toggleNav() {
       this.showNav = !this.showNav;
     },
+    logout(){
+      axios.delete("/api/logout", {refreshToken: this.$store.state.refreshToken}).then(()=>{
+        this.setAccessToken(null);
+        this.setRefreshToken(null);
+        this.toggleNav();
+      })
+    }
   },
+  computed:{
+    unLogged(){
+      return !this.$store.state.refreshToken;
+    }
+  }
 };
 </script>
 
@@ -107,6 +123,7 @@ nav {
       &:hover{
         color: $teal;
         margin-left:5px;
+        cursor: pointer;
       }
     }
   }

@@ -22,13 +22,21 @@
 
 <script>
 import TheHeader from "./components/layout/TheHeader.vue";
-import { mapMutations, mapActions } from "vuex";
+import { mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   components: { TheHeader },
   methods: {
-    ...mapMutations("dialog", ["hideDialog", "dialogType"]),
+    ...mapMutations("dialog", ["hideDialog"]),
     ...mapActions("dialog", ["dialogYes"]),
   },
+  computed:{
+    ...mapGetters("dialog", ["dialogType"]),
+  },
+  watch:{
+    dialogType(value){
+      console.log(value);
+    }
+  }
 };
 </script>
 <style lang="scss">
