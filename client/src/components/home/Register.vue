@@ -11,8 +11,8 @@
         label="E-mail"
         id="email"
         type="email"
-        :validation="login.validity"
-        v-model:value="login.value"
+        :validation="email.validity"
+        v-model:value="email.value"
       ></base-input>
       <base-input
         label="Hasło"
@@ -25,7 +25,7 @@
         label="Powtórz Hasło"
         id="password-repeat"
         type="password"
-        :validation="password.validity"
+        validation=""
         v-model:value="password.repeatValue"
       ></base-input>
       <base-button>Zarejestruj</base-button>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import emailValidator from "email-validator";
 export default {
   data() {
     return {
@@ -49,6 +50,10 @@ export default {
         value: null,
         repeatValue:"",
       },
+      email:{
+        validity: "",
+        value:"",
+      }
     };
   },
   computed: {
@@ -58,18 +63,26 @@ export default {
     passwordValue() {
       return this.password.value;
     },
+    emailValue() {
+      return this.email.value;
+    }
   },
   watch: {
-    loginValue(val) {
-      if (val.length < 4 && val.length != 0) {
-        this.login.validity = "Login musi mieć przynajmniej 4 znaki";
-      } else this.login.validity = "";
+     loginValue(val) {
+      if (val.length < 3 && val.length != 0) return this.login.validity = "Login musi mieć przynajmniej 3 znaki";
+      if (val.length > 18) return this.login.validity = "Login nie możę przekraczać 18 znaków";
+      
+      this.login.validity = "";
     },
     passwordValue(val) {
-      if (val.length < 4 && val.length != 0) {
-        this.password.validity = "Hasło musi mieć przynajmniej 4 znaki";
-      } else this.password.validity = "";
+      if (val.length < 4 && val.length != 0) return this.password.validity = "Hasło musi mieć przynajmniej 4 znaki";
+      if (val != this.password.repeatValue && (this.password.repeatValue.length != 0 || val.length != 0)) return this.password.validity="Hasła się nie zgadzają"
+      return this.password.validity = "";
     },
+    emailValue(val){
+      if(!emailValidator.validate(val) && val.length != 0) return this.email.validity = "Niepoprawny adress email";
+      return this.email.validity = "";
+    }
   },
   name: "Home",
 };

@@ -49,7 +49,7 @@ export default {
   },
   watch: {
     loginValue(val) {
-      if (val.length < 4 && val.length != 0) return this.login.validity = "Login musi mieć przynajmniej 4 znaki";
+      if (val.length < 3 && val.length != 0) return this.login.validity = "Login musi mieć przynajmniej 3 znaki";
       if (val.length > 18) return this.login.validity = "Login nie możę przekraczać 18 znaków";
       
       this.login.validity = "";
@@ -71,7 +71,8 @@ export default {
         const {refreshToken, accessToken} = res.data;
         this.setRefreshToken(refreshToken);
         this.setAccessToken(accessToken);
-        console.log(this.$store.getters["getTokens"]);
+        this.$router.replace('/activities');
+        // console.log(this.$store.getters["getTokens"]);
       })
       .catch(()=>{
         this.$store.commit('dialog/displayDialog', {title: "Bład", msg:"Błędne dane logowania", type:'default'});
