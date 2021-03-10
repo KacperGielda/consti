@@ -13,7 +13,7 @@ router.post('/register', auth.register )
 router.post('/token', auth.refreshToken)
 router.delete("/logout", auth.logout)
 
-router.get('/all', auth.authenticateToken, (req, res)=>{res.json(req.user);});
+router.get('/lastmodified', auth.authenticateToken, (req, res)=>{res.json(req.user.lastModified);});
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //activities

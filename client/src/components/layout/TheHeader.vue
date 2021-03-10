@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 import {mapMutations} from "vuex";
 export default {
   data() {
@@ -38,11 +38,8 @@ export default {
       this.showNav = !this.showNav;
     },
     logout(){
-      axios.delete("/api/logout", {refreshToken: this.$store.state.refreshToken}).then(()=>{
-        this.setAccessToken(null);
-        this.setRefreshToken(null);
-        this.toggleNav();
-      })
+      this.toggleNav();
+      this.$store.dispatch("logout");
     }
   },
   computed:{

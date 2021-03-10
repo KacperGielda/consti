@@ -63,7 +63,8 @@ export default {
   methods:{
     ...mapMutations(["setAccessToken", "setRefreshToken"]),
     signIn(){
-      if(this.login.validity.length != 0 || this.password.validity.length != 0) return;
+      if(this.login.validity.length != 0 || this.password.validity.length != 0 || this.loginValue.length == 0 || this.passwordValue.length == 0) return;
+        console.log('res');
       axios.post('api/login',{
         login: this.loginValue,
         password: this.passwordValue,
