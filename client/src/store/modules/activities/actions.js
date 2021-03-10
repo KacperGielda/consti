@@ -21,9 +21,11 @@ const calcTaskProgres = (activity) => {
 
 const saveActivitiesLocaly = (state) => {
   localForage.setItem("activities", JSON.parse(JSON.stringify(state.activities)));
+  localForage.setItem("lastModified", new Date());
 };
 const saveActiveTasksLocaly = (state) => {
   localForage.setItem("activeTasks", JSON.parse(JSON.stringify(state.activeTasks)));
+  localForage.setItem("lastModified", new Date());
 };
 
 export default {
@@ -167,4 +169,28 @@ export default {
       router.replace("/activities");
     }, 1);
   },
+  fetchData({state, rootGetters, dispatch}){
+      const provider = rootGetters.dataProvider;
+      switch(provider){
+          case "local":
+            localForage.getItem("activities").then(res => {
+                if (res === {}) res = [];
+                state.activities = res;
+            })
+           localForage.getItem("activeTasks ").then(res => {
+            if (res === {}) res = [];
+            state.activeTasks = res;
+           });    
+            break;
+            case "server":
+                dispatch("sendRequest", { url: "/api/activities" }, {root: true}).then(res => {
+                    state.activities = res;
+                });   
+                dispatch("sendRequest", { url: "/api/activetasks" }, {root: true}).then(res => {
+                    state.activities = res;
+                });   
+
+      }
+    
+  }
 };

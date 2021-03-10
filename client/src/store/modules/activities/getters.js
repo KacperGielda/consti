@@ -11,6 +11,8 @@ export default {
     activities(state) {
         const active = [];
         const notActive = [];
+        // state.activities.push({sdfss:"wew"});
+        console.log(typeof state.activities);
         state.activities.forEach((activity) => {
             if (activity.isActive) active.push(activity);
             else notActive.push(activity);

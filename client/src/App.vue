@@ -57,14 +57,14 @@ export default {
       );
       return;
     }
-    if (!refreshToken || !isConnected) return;
-
-    
+    if (!refreshToken || !isConnected) {
+         this.$store.commit("setDataProvider",{lastModified, lastModifiedOnServer:null});
+        return this.$store.dispatch('activities/fetchData');
+    }
 
     this.$store.commit("setRefreshToken", refreshToken);
-    this.$store
-      .dispatch("sendRequest", { url: "/api/all" })
-      .then(res => console.log(res));
+    const lastModifiedOnServer = await this.$store.dispatch("sendRequest", { url: "/api/lastmodified" });
+    this.$store.commit("setDataProvider",{lastModified, lastModifiedOnServer});
     
   }
 };

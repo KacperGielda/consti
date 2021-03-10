@@ -18,6 +18,7 @@ export default createStore({
         accessToken: null,
         refreshToken: null,
         lastModified: null,
+        dataProvider: 'local',
     }
   },
   mutations: {
@@ -28,6 +29,13 @@ export default createStore({
       state.refreshToken = token;
       localForage.setItem('refreshToken', token);
     },
+    setDataProvider(state, {localLastMod, serverLastMod}){
+      if (!serverLastMod) return state.dataProvider = 'local';
+      if(localLastMod > serverLastMod){
+        state.dataProvider = 'local';
+      } else state.dataProvider = 'server';
+    }
+
   },
   actions: {
     async refreshToken({state}){
@@ -54,5 +62,8 @@ export default createStore({
     accessToken(state){
       return state.accessToken;
     },
+    dataProvider(state){
+      return state.dataProvider;
+    }
   }
 })
