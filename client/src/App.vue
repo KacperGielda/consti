@@ -21,21 +21,51 @@
 </template>
 
 <script>
+import localForage from "localforage";
+// import axios from "axios";
 import TheHeader from "./components/layout/TheHeader.vue";
 import { mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   components: { TheHeader },
   methods: {
     ...mapMutations("dialog", ["hideDialog"]),
-    ...mapActions("dialog", ["dialogYes"]),
+    ...mapActions("dialog", ["dialogYes"])
   },
-  computed:{
+  computed: {
     ...mapGetters("dialog", ["dialogType"]),
+    ...mapGetters("activities", ["activeTasks", "activities"])
   },
-  watch:{
-    dialogType(value){
+  watch: {
+    dialogType(value) {
       console.log(value);
     }
+  },
+  async mounted() {
+    const lastModified = await localForage.getItem("lastModified");
+    const isConnected = window.navigator.onLine;
+    const refreshToken = await localForage.getItem("refreshToken");
+
+    if (!lastModified) {
+      localForage.setItem("lastModified", new Date());
+      localForage.setItem("activities", {
+        ...this.activities.active,
+        ...this.activities.notActive
+      });
+      localForage.setItem(
+        "activeTasks",
+        JSON.parse(JSON.stringify(this.activeTasks))
+      );
+      return;
+    }
+    if (!refreshToken || !isConnected) return;
+
+    
+
+    this.$store.commit("setRefreshToken", refreshToken);
+    this.$store
+      .dispatch("sendRequest", { url: "/api/all" })
+      .then(res => console.log(res));
+    
   }
 };
 </script>
