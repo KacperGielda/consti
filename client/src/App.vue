@@ -38,7 +38,7 @@ export default {
   watch: {
     dialogType(value) {
       console.log(value);
-    }
+    },
   },
   async mounted() {
     const lastModified = await localForage.getItem("lastModified");
@@ -47,10 +47,10 @@ export default {
 
     if (!lastModified) {
       localForage.setItem("lastModified", new Date());
-      localForage.setItem("activities", {
+      localForage.setItem("activities", [
         ...this.activities.active,
         ...this.activities.notActive
-      });
+      ]);
       localForage.setItem(
         "activeTasks",
         JSON.parse(JSON.stringify(this.activeTasks))
@@ -58,13 +58,17 @@ export default {
       return;
     }
     if (!refreshToken || !isConnected) {
+      console.log("/token /int");
          this.$store.commit("setDataProvider",{lastModified, lastModifiedOnServer:null});
         return this.$store.dispatch('activities/fetchData');
     }
 
     this.$store.commit("setRefreshToken", refreshToken);
-    const lastModifiedOnServer = await this.$store.dispatch("sendRequest", { url: "/api/lastmodified" });
-    this.$store.commit("setDataProvider",{lastModified, lastModifiedOnServer});
+    let lastModifiedOnServer = await this.$store.dispatch("sendRequest", { url: "/api/lastmodified" });
+    lastModifiedOnServer = lastModifiedOnServer.data;
+    console.log(lastModifiedOnServer, "sdsdsd");
+    this.$store.commit("setDataProvider",{localLastMod: lastModified, serverLastMod: lastModifiedOnServer});
+    return this.$store.dispatch('activities/fetchData');
     
   }
 };

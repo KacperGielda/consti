@@ -36,6 +36,7 @@ router.put('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken
 //activeTasks
 //////////////////////////////////////////////////////////////////////////////////////////////////
 router.get('/activetasks', auth.authenticateToken, activeTasks.getActiveTasks);
-router.put('/activetasks/:weekDay', auth.authenticateToken, activeTasks.updateActiveDay);
-
+router.post('/activetasks', auth.authenticateToken, activeTasks.updateActiveTasks);
+// router.put('/activetasks/:weekDay', auth.authenticateToken, activeTasks.updateActiveDay);    
+    
 module.exports = router;

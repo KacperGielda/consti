@@ -19,17 +19,38 @@ const calcTaskProgres = (activity) => {
   return Math.round((doneCounter / tasks) * 100);
 };
 
-const saveActivitiesLocaly = (state) => {
-  localForage.setItem("activities", JSON.parse(JSON.stringify(state.activities)));
+const saveActivitiesLocaly = async (state, dispatch) => {
+  localForage.setItem(
+    "activities",
+    JSON.parse(JSON.stringify(state.activities))
+  );
   localForage.setItem("lastModified", new Date());
+  console.log(dispatch);
+  // if (window.navigator.onLine && await localForage.getItem("refreshToken")){
+  //   dispatch('sendRequest',{url: "/api/activities", method: "post", data:JSON.parse(JSON.stringify(state.activities)),}, {root: true})
+  // }
 };
-const saveActiveTasksLocaly = (state) => {
-  localForage.setItem("activeTasks", JSON.parse(JSON.stringify(state.activeTasks)));
+const saveActiveTasksLocaly = async (state, dispatch) => {
+  localForage.setItem(
+    "activeTasks",
+    JSON.parse(JSON.stringify(state.activeTasks))
+  );
   localForage.setItem("lastModified", new Date());
+  if (window.navigator.onLine && (await localForage.getItem("refreshToken"))) {
+    dispatch(
+      "sendRequest",
+      {
+        url: `/api/activetasks`,
+        method: "post",
+        data: JSON.parse(JSON.stringify(state.activeTasks)),
+      },
+      { root: true }
+    );
+  }
 };
 
 export default {
-  addNewSubTask({ state }, payload) {
+  addNewSubTask({ state, dispatch }, payload) {
     const activity = findActivityById(state, payload.id);
     const id = new Date().getTime() + Math.random();
     activity.subTasks.push({
@@ -38,7 +59,7 @@ export default {
       status: "to-do",
     });
     activity.progress = calcTaskProgres(activity);
-    saveActivitiesLocaly(state);
+    saveActivitiesLocaly(state, dispatch);
   },
   changeSubTaskStatus({ state, commit, dispatch }, payload) {
     const activity = findActivityById(state, payload.activityId);
@@ -72,9 +93,9 @@ export default {
         { root: true }
       );
     }
-    saveActivitiesLocaly(state);
+    saveActivitiesLocaly(state, dispatch);
   },
-  createActivity({ state }) {
+  createActivity({ state, dispatch }) {
     const activity = {
       id: new Date().getTime() + Math.random(),
       date: new Date(2020, 2, 2),
@@ -86,10 +107,10 @@ export default {
 
     state.activities.push(activity);
     console.log(state.activities);
-    saveActivitiesLocaly(state);
+    saveActivitiesLocaly(state, dispatch);
     return activity.id;
   },
-  updateActiveTasks({ state }, payload) {
+  updateActiveTasks({ state, dispatch }, payload) {
     const newDayPlan = state.activeTasks[payload.weekDay].filter(
       (el) => el.id != payload.id
     );
@@ -103,10 +124,10 @@ export default {
       else return 1;
     });
     state.activeTasks[payload.weekDay] = newDayPlan;
-    saveActiveTasksLocaly(state);
-    saveActivitiesLocaly(state);
+    saveActiveTasksLocaly(state, dispatch);
+    saveActivitiesLocaly(state, dispatch);
   },
-  deactivate({ state }, id) {
+  deactivate({ state, dispatch }, id) {
     id = Number(id);
     const activity = findActivityById(state, id);
     activity.isActive = false;
@@ -117,16 +138,16 @@ export default {
       newActiveTasks.push(weekDay);
     });
     state.activeTasks = newActiveTasks;
-    saveActiveTasksLocaly(state);
-    saveActivitiesLocaly(state);
+    saveActiveTasksLocaly(state, dispatch);
+    saveActivitiesLocaly(state), dispatch;
   },
-  resetSubTasks({ state }, id) {
+  resetSubTasks({ state, dispatch }, id) {
     const activity = findActivityById(state, id);
     activity.subTasks.forEach((subTask) => {
       subTask.status = "to-do";
     });
     activity.progress = 0;
-    saveActivitiesLocaly(state);
+    saveActivitiesLocaly(state, dispatch);
   },
   deleteActivity({ state, commit, dispatch }, id) {
     const del = () => {
@@ -150,47 +171,56 @@ export default {
         { root: true }
       );
   },
-  deleteSubTask({ state }, payload) {
+  deleteSubTask({ state, dispatch }, payload) {
     const activity = findActivityById(state, payload.activityId);
     activity.subTasks = activity.subTasks.filter((el) => el.id != payload.id);
     activity.progress = calcTaskProgres(activity);
-    saveActivitiesLocaly(state);
+    saveActivitiesLocaly(state, dispatch);
   },
   delActivity({ state, dispatch }, id) {
     console.log("asas", id);
     for (let weekDay = 0; weekDay < 7; weekDay++) {
       dispatch("updateActiveTasks", { show: false, id, weekDay });
-      saveActivitiesLocaly(state);
-      saveActiveTasksLocaly(state);
     }
     state.activities = state.activities.filter((el) => el.id != id);
+    saveActivitiesLocaly(state, dispatch);
+    saveActiveTasksLocaly(state, dispatch);
     router.replace("/schedule");
     setTimeout(() => {
       router.replace("/activities");
     }, 1);
   },
-  fetchData({state, rootGetters, dispatch}){
-      const provider = rootGetters.dataProvider;
-      switch(provider){
-          case "local":
-            localForage.getItem("activities").then(res => {
-                if (res === {}) res = [];
-                state.activities = res;
-            })
-           localForage.getItem("activeTasks ").then(res => {
-            if (res === {}) res = [];
-            state.activeTasks = res;
-           });    
-            break;
-            case "server":
-                dispatch("sendRequest", { url: "/api/activities" }, {root: true}).then(res => {
-                    state.activities = res;
-                });   
-                dispatch("sendRequest", { url: "/api/activetasks" }, {root: true}).then(res => {
-                    state.activities = res;
-                });   
-
-      }
-    
-  }
+  fetchData({ state, rootGetters, dispatch }) {
+    const provider = rootGetters.dataProvider;
+    switch (provider) {
+      case "local":
+        localForage.getItem("activities").then((res) => {
+          if (res === {}) res = [];
+          console.log(res);
+          state.activities = res;
+        });
+        localForage.getItem("activeTasks").then((res) => {
+          if (res === {}) res = [];
+          state.activeTasks = res;
+          console.log(res);
+        });
+        break;
+      case "server":
+        dispatch(
+          "sendRequest",
+          { url: "/api/activities" },
+          { root: true }
+        ).then((res) => {
+          state.activities = res.data;
+        });
+        dispatch(
+          "sendRequest",
+          { url: "/api/activetasks" },
+          { root: true }
+        ).then((res) => {
+          state.activeTasks = res.data;
+          console.log(res.data, "2");
+        });
+    }
+  },
 };

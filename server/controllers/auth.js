@@ -44,7 +44,10 @@ module.exports = {
         }
             accessToken = generateAccessToken(user._id);
             generateRefreshToken(user._id, (err, refreshToken) => {
-                if(err && !refreshToken) return res.sendStatus(401);
+                if(err && !refreshToken) {
+                    console.log(refreshToken, err);
+                    return  res.sendStatus(401);
+                }
                 return res.json({accessToken, refreshToken});
             });
     },

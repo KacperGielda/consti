@@ -17,7 +17,7 @@ const subTaskSchema = new mongoose.Schema({
         type:String,
         default: "to-do",
     }
-},{_id: false});
+},{_id: false, skipVersioning: { dontVersionMe: true } });
 
 const activitySchema = new mongoose.Schema({
     id: {
@@ -42,18 +42,18 @@ const activitySchema = new mongoose.Schema({
         required: true,
     },
     subTasks:[subTaskSchema],
-},{_id: false});
+},{_id: false, skipVersioning: { dontVersionMe: true } });
 
 const DayActivitySchema= new mongoose.Schema({
     id: {
-        type:String,
+        type:Number,
         required:"true",
         unique:"false",
     },
     timeStamps:{
         type: Array,
     }
-},{_id: false})
+},{_id: false, skipVersioning: { dontVersionMe: true } })
 
 const userSchema = new mongoose.Schema({
     login: {
@@ -79,8 +79,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: false,
-        minlength: 6,
-        maxlength: 18,
     },
     activeTasks:[
 [DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],

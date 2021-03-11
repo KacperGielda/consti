@@ -18,7 +18,7 @@ export default createStore({
         accessToken: null,
         refreshToken: null,
         lastModified: null,
-        dataProvider: 'local',
+        dataProvider: null,
     }
   },
   mutations: {
@@ -30,10 +30,18 @@ export default createStore({
       localForage.setItem('refreshToken', token);
     },
     setDataProvider(state, {localLastMod, serverLastMod}){
-      if (!serverLastMod) return state.dataProvider = 'local';
-      if(localLastMod > serverLastMod){
-        state.dataProvider = 'local';
-      } else state.dataProvider = 'server';
+      console.log(localLastMod);
+      (()=>{
+        if (!serverLastMod) return state.dataProvider = 'local';
+        if(localLastMod > serverLastMod){
+          state.dataProvider = 'local';
+        } else state.dataProvider = 'server';
+      })();
+      console.log(state.dataProvider);
+      // if (!serverLastMod) return state.dataProvider = 'local';
+      // if(localLastMod > serverLastMod){
+      //   state.dataProvider = 'local';
+      // } else state.dataProvider = 'server';
     }
 
   },
@@ -47,7 +55,7 @@ export default createStore({
     },
     async sendRequest({dispatch},{url, method = 'get', data = {},}){
       const accessToken =  await dispatch('refreshToken');
-      return axios({method, url, data, headers:{'Authorization': `bearer ${accessToken}`}});
+      return axios({method, url, data, headers:{'Authorization': `bearer ${accessToken}`,'content-type': 'application/json' }});
     },
     async logout({state}){
       axios.delete("/api/logout", {refreshToken: state.refreshToken}).then(()=>{

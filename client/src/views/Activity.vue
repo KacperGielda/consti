@@ -1,6 +1,9 @@
 <template>
   <div class="activity">
-    <header>
+    <div v-if="isLoading">
+    </div>
+    <div v-if="!isLoading">
+        <header>
       <div v-if="!titleEditMode" class="title" @click="changeTitle">
         {{ title }}
       </div>
@@ -39,6 +42,7 @@
         :activity-id="Number(id)"
       />
     </section>
+    </div>
   </div>
 </template>
 
@@ -76,15 +80,18 @@ export default {
       placeholder: "",
       title: "",
       allowToSave: false,
+      isLoading: true,
+      activity: null,
     };
   },
   computed: {
     ...mapGetters("activities", ["activityById", "termsById"]),
-    activity() {
-      return this.activityById(Number(this.id));
-    },
+    // activity() {
+
+    //   return 
+    // },
     terms() {
-      console.log("dupa");
+      console.log(this.terms, "dupa");
       return JSON.parse(JSON.stringify(this.termsById(Number(this.id))));
     },
   },
@@ -107,6 +114,15 @@ export default {
   },
   mounted() {
     // console.log(this.terms);
+    this.isLoading = true;
+    while(!this.activity){
+      this.activity = this.activityById(Number(this.id));
+      console.log(this.activity, "ewerw30-4459304358543830484084308443034rrrrrrrr");
+
+    }
+    console.log(this.activity, "ewrrrrrrrrrrrrrrrrrrrrrr");
+    this.isLoading = false;
+
     this.newTitle = this.activity.title;
     this.title =
       this.activity.title !== ""

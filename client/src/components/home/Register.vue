@@ -1,6 +1,6 @@
 <template>
   <base-container title="Rejestracja">
-    <form class="form-login">
+    <form class="form-login" @submit.prevent="signUp">
       <base-input
         label="Login"
         id="login"
@@ -38,6 +38,8 @@
 
 <script>
 import emailValidator from "email-validator";
+import localForage from "localforage";
+import axios from "axios";
 export default {
   data() {
     return {
@@ -82,6 +84,27 @@ export default {
     emailValue(val){
       if(!emailValidator.validate(val) && val.length != 0) return this.email.validity = "Niepoprawny adress email";
       return this.email.validity = "";
+    }
+  },
+  methods:{
+    async signUp(){
+      axios({url:"/api/register",method: "post", data:{
+        login:this.loginValue,
+        password:this.passwordValue,
+        email: this.emailValue,
+        activeTasks: await localForage.getItem('activeTasks'),
+        activities: await localForage.getItem('activities'),
+      }}).then(res => {
+        const {accessToken, refreshToken} = res.data;
+        console.log(accessToken, refreshToken, res.data);
+         this.$store.commit("setRefreshToken", refreshToken);
+         this.$store.commit("setAccessToken", accessToken);
+          this.$store.commit("setDataProvider",{localLastMod: 0, serverLastMod: 1});
+        this.$store.dispatch('activities/fetchData');
+        this.$router.replace('/activities');
+  
+      });
+
     }
   },
   name: "Home",
