@@ -46,6 +46,7 @@ export default createStore({
       return axios({
         method,
         url,
+        baseURL: '/',
         data,
         headers: {
           Authorization: `bearer ${accessToken}`,
@@ -109,5 +110,8 @@ export default createStore({
     dataProvider(state) {
       return state.dataProvider;
     },
+    canSendRequest(state){
+      return (window.navigator.onLine && state.refreshToken);
+    }
   },
 });

@@ -20,6 +20,7 @@ router.get('/lastmodified', auth.authenticateToken, (req, res)=>{res.json(req.us
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.get('/activities', auth.authenticateToken, activities.getActivities);
+router.put('/activities', auth.authenticateToken, activities.putActivities);
 router.post('/activities', auth.authenticateToken, activities.addActivity);
 router.delete('/activities/:id', auth.authenticateToken, activities.deleteActivity);
 router.put('/activities/:id', auth.authenticateToken, activities.updateActivity);
@@ -30,13 +31,13 @@ router.put('/activities/:id', auth.authenticateToken, activities.updateActivity)
 
 router.post('/activities/:id/subtasks', auth.authenticateToken, subTasks.addSubTask);
 router.delete('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.deleteSubTask);
-router.put('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.updateSubTask);
+router.patch('/activities/:activityId/subtasks/:subTaskId', auth.authenticateToken, subTasks.updateSubTask);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //activeTasks
 //////////////////////////////////////////////////////////////////////////////////////////////////
 router.get('/activetasks', auth.authenticateToken, activeTasks.getActiveTasks);
-router.post('/activetasks', auth.authenticateToken, activeTasks.updateActiveTasks);
-// router.put('/activetasks/:weekDay', auth.authenticateToken, activeTasks.updateActiveDay);    
+router.put('/activetasks', auth.authenticateToken, activeTasks.updateActiveTasks);
+router.put('/activetasks/:weekDay', auth.authenticateToken, activeTasks.updateActiveDay);    
     
 module.exports = router;

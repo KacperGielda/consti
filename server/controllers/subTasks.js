@@ -26,7 +26,9 @@ module.exports = {
         const {activityId, subTaskId} = req.params;
         const activityIndex = user.activities.findIndex(activity => activity.id == activityId);
         const subTaskIndex = user.activities[activityIndex].subTasks.findIndex(subTask => subTask.id == subTaskId);
-        user.activities[activityIndex].subTasks.set(subTaskIndex,{...req.body, id: Number(subTaskId)});
+        for (const [key, value] of Object.entries(req.body)){
+            user.activities[activityIndex].subTasks[subTaskIndex][key] = value;
+        }
         user.save().then( user => {
             if (!user) return res.sendStatus(404);
             res.sendStatus(204);

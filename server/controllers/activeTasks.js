@@ -5,7 +5,8 @@ module.exports = {
     updateActiveDay(req,res){
         const user = req.user;
         const {weekDay} = req.params;
-        user.activeTasks.set(Number(weekDay), req.body);
+        console.log(req.body[0])
+        user.activeTasks.set(Number(weekDay), req.body[0]);
         user.save().then( user => {
             if (!user) return res.sendStatus(404);
             res.sendStatus(201);

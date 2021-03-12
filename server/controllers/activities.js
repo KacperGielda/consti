@@ -3,7 +3,7 @@ module.exports = {
     getActivities(req,res){
         res.json(req.user.activities)
     },
-    addActivity(req, res){
+    putActivities(req, res){
         const user = req.user;
         const activities = req.body;
         console.log(Array.isArray(activities), activities);
@@ -14,6 +14,16 @@ module.exports = {
         }
         ).catch(err => console.log(err));
         
+    },
+    addActivity(req, res){
+        const user = req.user;
+        const activity = req.body;
+        user.activities.push(activity);
+        user.save({ validateBeforeSave: false }).then( user => {
+            if (!user) return res.sendStatus(404);
+            res.sendStatus(201);
+        }
+        ).catch(err => console.log(err));
     },
     deleteActivity(req,res){
         const user = req.user;

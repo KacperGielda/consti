@@ -19,16 +19,16 @@ const calcTaskProgres = (activity) => {
   return Math.round((doneCounter / tasks) * 100);
 };
 
-const saveActivitiesLocaly = async (state, dispatch) => {
+const saveActivitiesLocaly = async (state, dispatch,) => {
   localForage.setItem(
     "activities",
     JSON.parse(JSON.stringify(state.activities))
   );
   localForage.setItem("lastModified", new Date());
   console.log(dispatch);
-  if (window.navigator.onLine && await localForage.getItem("refreshToken")){
-    dispatch('sendRequest',{url: "/api/activities", method: "post", data:JSON.parse(JSON.stringify(state.activities)),}, {root: true})
-  }
+  // if (window.navigator.onLine && await localForage.getItem("refreshToken")){
+  //   dispatch('sendRequest',{url: "/api/activities", method: "post", data:JSON.parse(JSON.stringify(state.activities)),}, {root: true})
+  // }
 };
 const saveActiveTasksLocaly = async (state, dispatch) => {
   localForage.setItem(
@@ -36,21 +36,23 @@ const saveActiveTasksLocaly = async (state, dispatch) => {
     JSON.parse(JSON.stringify(state.activeTasks))
   );
   localForage.setItem("lastModified", new Date());
-  if (window.navigator.onLine && (await localForage.getItem("refreshToken"))) {
-    dispatch(
-      "sendRequest",
-      {
-        url: `/api/activetasks`,
-        method: "post",
-        data: {activeTasks: JSON.parse(JSON.stringify(state.activeTasks))},
-      },
-      { root: true }
-    ).then(res => console.log(res));
-  }
+  console.log(dispatch);
+
+  // if (window.navigator.onLine && (await localForage.getItem("refreshToken"))) {
+  //   dispatch(
+  //     "sendRequest",
+  //     {
+  //       url: `/api/activetasks`,
+  //       method: "post",
+  //       data: {activeTasks: JSON.parse(JSON.stringify(state.activeTasks))},
+  //     },
+  //     { root: true }
+  //   ).then(res => console.log(res));
+  // }
 };
 
 export default {
-  addNewSubTask({ state, dispatch }, payload) {
+  addNewSubTask({ state, dispatch, rootGetters }, payload) {
     const activity = findActivityById(state, payload.id);
     const id = new Date().getTime() + Math.random();
     activity.subTasks.push({
@@ -60,8 +62,15 @@ export default {
     });
     activity.progress = calcTaskProgres(activity);
     saveActivitiesLocaly(state, dispatch);
+    if(rootGetters.canSendRequest){
+      dispatch('sendRequest',{url:`/api/activities/${activity.id}/subtasks`, method:'post', data:{
+        id,
+        desc:payload.desc,
+        status:"to-do",
+      } }, {root: true})
+    }
   },
-  changeSubTaskStatus({ state, commit, dispatch }, payload) {
+  changeSubTaskStatus({ state, commit, dispatch, rootGetters }, payload) {
     const activity = findActivityById(state, payload.activityId);
     const subTask =
       activity.subTasks[getSubTaskIndex(activity, payload.subTaskId)];
@@ -75,6 +84,11 @@ export default {
       case "done":
         subTask.status = "to-do";
         break;
+      }
+      if(rootGetters.canSendRequest){
+        dispatch('sendRequest',{url:`/api/activities/${activity.id}/subtasks/${payload.subTaskId}`, method:'patch', data:{
+          status: subTask.status,
+        } }, {root: true})
       }
       saveActiveTasksLocaly(state,dispatch);
       activity.progress = calcTaskProgres(activity);
@@ -96,7 +110,7 @@ export default {
     }
     saveActivitiesLocaly(state, dispatch);
   },
-  createActivity({ state, dispatch }) {
+  createActivity({ state, dispatch, rootGetters }) {
     const activity = {
       id: new Date().getTime() + Math.random(),
       date: new Date(2020, 2, 2),
@@ -109,9 +123,14 @@ export default {
     state.activities.push(activity);
     console.log(state.activities);
     saveActivitiesLocaly(state, dispatch);
+    if(rootGetters.canSendRequest){
+      dispatch('sendRequest',{url:`/api/activities/`, method:'post', data:{
+        ...activity,
+      } }, {root: true})
+    }
     return activity.id;
   },
-  updateActiveTasks({ state, dispatch }, {weekDay, timeStamps, show, id, save = true,}) {
+  updateActiveTasks({ state, dispatch, rootGetters }, {weekDay, timeStamps, show, id, save = true,}) {
     const newDayPlan = state.activeTasks[weekDay].filter(
       (el) => el.id != id
     );
@@ -128,9 +147,17 @@ export default {
     if (save){
       saveActiveTasksLocaly(state, dispatch);
       saveActivitiesLocaly(state, dispatch);
+      if(rootGetters.canSendRequest){
+        dispatch('sendRequest',{url:`/api/activetasks/${weekDay}`, method:'put', data:{
+          ...newDayPlan,
+        } }, {root: true})
+      }
     }
   },
-  deactivate({ state, dispatch }, id) {
+  deactivate({ state, dispatch, rootGetters }, id) {
+    /////////////////////////////////////////////////////////
+    console.log("ewrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+    /////////////////////////////////////////////////////////////////////
     id = Number(id);
     const activity = findActivityById(state, id);
     activity.isActive = false;
@@ -143,6 +170,11 @@ export default {
     state.activeTasks = newActiveTasks;
     saveActiveTasksLocaly(state, dispatch);
     saveActivitiesLocaly(state, dispatch);
+    if(rootGetters.canSendRequest){
+      dispatch('sendRequest',{url:`/api/activetasks`, method:'put', data:{
+        ...state.activeTasks,
+      } }, {root: true})
+    }
   },
   resetSubTasks({ state, dispatch }, id) {
     const activity = findActivityById(state, id);
@@ -197,19 +229,14 @@ export default {
   },
   fetchData({ state, rootGetters, dispatch }) {
     const provider = rootGetters.dataProvider;
-    console.log(provider, "ewrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrroioioi23023423900924328");
     switch (provider) {
       case "local":
         localForage.getItem("activities").then((res) => {
           if (!res) res = [];
-          // res = Object.keys(res).map((key) => [Number(key), res[key]]);
-          // console.log(res);
           state.activities = res;
         });
         localForage.getItem("activeTasks").then((res) => {
           if (!res) res = [[],[],[],[],[],[],[],[]];
-          // if (res === {}) res = [];
-          // res = Object.keys(res).map((key) => [Number(key), res[key]]);
           state.activeTasks = res;
           console.log(res);
         });
