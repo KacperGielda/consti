@@ -16,15 +16,21 @@ module.exports = {
     },
     updateActiveTasks(req,res){
         const user = req.user;
-        const activeTasks = req.body;
-        // console.log(activeTasks, "ewwwwwwwwwwwww");   
+        let { activeTasks } = req.body;
+        // activeTasks = Object.keys(activeTasks).map((key) => [Number(key), activeTasks[key]]);
+        console.log(Array.isArray(activeTasks), activeTasks, "eww");
         user.activeTasks = activeTasks;
-        user.save().then( user => {
+        // res.json(activeTasks);   
+        // user.activeTasks = activeTasks;
+        user.save({validate: false}).then( user => {
             if (!user) return res.sendStatus(404);
             res.sendStatus(201);
         }
-        ).catch(err =>
-            console.log(err)
+        ).catch(err =>{
+            // console.log(err)
+            return res.json({activeTasks, dupa:JSON.stringify(activeTasks)});
+            // return res.sendStatus(404)
+        }
         );
     }
 }

@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {mapMutations} from "vuex";
 export default {
   data() {
@@ -55,7 +54,7 @@ export default {
       this.login.validity = "";
     },
     passwordValue(val) {
-      if (val.length < 6 && val.length != 0)return this.password.validity = "Hasło musi mieć przynajmniej 6 znaków";
+      if (val.length < 4 && val.length != 0)return this.password.validity = "Hasło musi mieć przynajmniej 4 znaków";
       if(val.length > 18) return this.password.validity = "Hasło nie możę przekraczać 18 znaków";
       this.password.validity = "";
     },
@@ -64,21 +63,9 @@ export default {
     ...mapMutations(["setAccessToken", "setRefreshToken"]),
     signIn(){
       if(this.login.validity.length != 0 || this.password.validity.length != 0 || this.loginValue.length == 0 || this.passwordValue.length == 0) return;
-        console.log('res');
-      axios.post('api/login',{
-        login: this.loginValue,
-        password: this.passwordValue,
-      } ).then(res => {
-        const {refreshToken, accessToken} = res.data;
-        this.setRefreshToken(refreshToken);
-        this.setAccessToken(accessToken);
-        this.$router.replace('/activities');
-        // console.log(this.$store.getters["getTokens"]);
-      })
-      .catch(()=>{
-        this.$store.commit('dialog/displayDialog', {title: "Bład", msg:"Błędne dane logowania", type:'default'});
-        this.password.value = "";
-      });
+        this.$store.dispatch('signIn',{login:this.loginValue, password:this.passwordValue}).then(()=>{
+          this.passwordValue = "";
+        });
     }
   },
   name: "Home",

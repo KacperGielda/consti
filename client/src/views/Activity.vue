@@ -115,12 +115,9 @@ export default {
   mounted() {
     // console.log(this.terms);
     this.isLoading = true;
-    while(!this.activity){
-      this.activity = this.activityById(Number(this.id));
-      console.log(this.activity, "ewerw30-4459304358543830484084308443034rrrrrrrr");
 
-    }
-    console.log(this.activity, "ewrrrrrrrrrrrrrrrrrrrrrr");
+    this.activity = this.activityById(Number(this.id));
+  console.log("Activity", this.activity);
     this.isLoading = false;
 
     this.newTitle = this.activity.title;
@@ -142,10 +139,8 @@ export default {
       this.titleEditMode = !this.titleEditMode;
       // console.log(this.$refs);
       if (this.newTitle) {
-        if (this.titleEditMode) {
           this.title = this.newTitle;
           this.activity.title = this.newTitle;
-        }
       } else this.newTitle = "";
     },
     save() {

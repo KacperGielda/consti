@@ -26,9 +26,9 @@ const saveActivitiesLocaly = async (state, dispatch) => {
   );
   localForage.setItem("lastModified", new Date());
   console.log(dispatch);
-  // if (window.navigator.onLine && await localForage.getItem("refreshToken")){
-  //   dispatch('sendRequest',{url: "/api/activities", method: "post", data:JSON.parse(JSON.stringify(state.activities)),}, {root: true})
-  // }
+  if (window.navigator.onLine && await localForage.getItem("refreshToken")){
+    dispatch('sendRequest',{url: "/api/activities", method: "post", data:JSON.parse(JSON.stringify(state.activities)),}, {root: true})
+  }
 };
 const saveActiveTasksLocaly = async (state, dispatch) => {
   localForage.setItem(
@@ -42,10 +42,10 @@ const saveActiveTasksLocaly = async (state, dispatch) => {
       {
         url: `/api/activetasks`,
         method: "post",
-        data: JSON.parse(JSON.stringify(state.activeTasks)),
+        data: {activeTasks: JSON.parse(JSON.stringify(state.activeTasks))},
       },
       { root: true }
-    );
+    ).then(res => console.log(res));
   }
 };
 
@@ -75,23 +75,24 @@ export default {
       case "done":
         subTask.status = "to-do";
         break;
-    }
-    activity.progress = calcTaskProgres(activity);
-    if (activity.progress === 100) {
-      commit(
-        "dialog/displayDialog",
-        {
-          msg: `Zadanie ${activity.title} jest już w pełni ukończone. Dezaktywować?`,
-          title: "Zadanie ukończone",
-          type: "choice",
-          activity: activity.id,
-          callback: () => {
-            dispatch("deactivate", activity.id);
-            saveActivitiesLocaly(state);
+      }
+      saveActiveTasksLocaly(state,dispatch);
+      activity.progress = calcTaskProgres(activity);
+      if (activity.progress === 100) {
+        commit(
+          "dialog/displayDialog",
+          {
+            msg: `Zadanie ${activity.title} jest już w pełni ukończone. Dezaktywować?`,
+            title: "Zadanie ukończone",
+            type: "choice",
+            activity: activity.id,
+            callback: () => {
+              dispatch("deactivate", activity.id);
+              saveActivitiesLocaly(state);
+            },
           },
-        },
-        { root: true }
-      );
+          { root: true }
+          );
     }
     saveActivitiesLocaly(state, dispatch);
   },
@@ -110,22 +111,24 @@ export default {
     saveActivitiesLocaly(state, dispatch);
     return activity.id;
   },
-  updateActiveTasks({ state, dispatch }, payload) {
-    const newDayPlan = state.activeTasks[payload.weekDay].filter(
-      (el) => el.id != payload.id
+  updateActiveTasks({ state, dispatch }, {weekDay, timeStamps, show, id, save = true,}) {
+    const newDayPlan = state.activeTasks[weekDay].filter(
+      (el) => el.id != id
     );
-    const activity = findActivityById(state, payload.id);
-    if (payload.show) {
+    const activity = findActivityById(state, id);
+    if (show) {
       activity.isActive = true;
-      newDayPlan.push({ id: payload.id, timeStamps: payload.timeStamps });
+      newDayPlan.push({ id, timeStamps });
     }
     newDayPlan.sort((a, b) => {
       if (a.timeStamps[0] < b.timeStamps[0]) return -1;
       else return 1;
     });
-    state.activeTasks[payload.weekDay] = newDayPlan;
-    saveActiveTasksLocaly(state, dispatch);
-    saveActivitiesLocaly(state, dispatch);
+    state.activeTasks[weekDay] = newDayPlan;
+    if (save){
+      saveActiveTasksLocaly(state, dispatch);
+      saveActivitiesLocaly(state, dispatch);
+    }
   },
   deactivate({ state, dispatch }, id) {
     id = Number(id);
@@ -139,7 +142,7 @@ export default {
     });
     state.activeTasks = newActiveTasks;
     saveActiveTasksLocaly(state, dispatch);
-    saveActivitiesLocaly(state), dispatch;
+    saveActivitiesLocaly(state, dispatch);
   },
   resetSubTasks({ state, dispatch }, id) {
     const activity = findActivityById(state, id);
@@ -155,6 +158,8 @@ export default {
         dispatch("updateActiveTasks", { show: false, id, weekDay });
       }
       state.activities = state.activities.filter((el) => el.id != id);
+      saveActivitiesLocaly(state, dispatch);
+      saveActiveTasksLocaly(state, dispatch);
     };
     id = Number(id);
     const activity = findActivityById(state, id);
@@ -180,7 +185,7 @@ export default {
   delActivity({ state, dispatch }, id) {
     console.log("asas", id);
     for (let weekDay = 0; weekDay < 7; weekDay++) {
-      dispatch("updateActiveTasks", { show: false, id, weekDay });
+      dispatch("updateActiveTasks", { show: false, id, weekDay, save:false, });
     }
     state.activities = state.activities.filter((el) => el.id != id);
     saveActivitiesLocaly(state, dispatch);
@@ -192,15 +197,19 @@ export default {
   },
   fetchData({ state, rootGetters, dispatch }) {
     const provider = rootGetters.dataProvider;
+    console.log(provider, "ewrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrroioioi23023423900924328");
     switch (provider) {
       case "local":
         localForage.getItem("activities").then((res) => {
-          if (res === {}) res = [];
-          console.log(res);
+          if (!res) res = [];
+          // res = Object.keys(res).map((key) => [Number(key), res[key]]);
+          // console.log(res);
           state.activities = res;
         });
         localForage.getItem("activeTasks").then((res) => {
-          if (res === {}) res = [];
+          if (!res) res = [[],[],[],[],[],[],[],[]];
+          // if (res === {}) res = [];
+          // res = Object.keys(res).map((key) => [Number(key), res[key]]);
           state.activeTasks = res;
           console.log(res);
         });
@@ -212,14 +221,15 @@ export default {
           { root: true }
         ).then((res) => {
           state.activities = res.data;
+          saveActivitiesLocaly(state, dispatch);
         });
         dispatch(
           "sendRequest",
           { url: "/api/activetasks" },
           { root: true }
-        ).then((res) => {
-          state.activeTasks = res.data;
-          console.log(res.data, "2");
+          ).then((res) => {
+            state.activeTasks = res.data;
+            saveActiveTasksLocaly(state, dispatch);
         });
     }
   },

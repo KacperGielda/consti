@@ -11,6 +11,7 @@ export default {
     activities(state) {
         const active = [];
         const notActive = [];
+        console.log(state.activities, "wrwerwrwerewwer");
         state.activities.forEach((activity) => {
             if (activity.isActive) active.push(activity);
             else notActive.push(activity);

@@ -99,7 +99,7 @@ export default {
         console.log(accessToken, refreshToken, res.data);
          this.$store.commit("setRefreshToken", refreshToken);
          this.$store.commit("setAccessToken", accessToken);
-          this.$store.commit("setDataProvider",{localLastMod: 0, serverLastMod: 1});
+          this.$store.dispatch("setDataProvider");
         this.$store.dispatch('activities/fetchData');
         this.$router.replace('/activities');
   

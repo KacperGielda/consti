@@ -1,77 +1,113 @@
-import { createStore } from 'vuex'
-import dialog from "./modules/dialog/index.js"
-import date from "./modules/date/index.js"
+import { createStore } from "vuex";
+import dialog from "./modules/dialog/index.js";
+import date from "./modules/date/index.js";
 import activities from "./modules/activities/index.js";
 
 import axios from "axios";
 import localForage from "localforage";
+import router from "../router/index.js";
 
 export default createStore({
-  modules:{
+  modules: {
     dialog,
     date,
     activities,
   },
   state() {
-    return{
-        login: null,
-        accessToken: null,
-        refreshToken: null,
-        lastModified: null,
-        dataProvider: null,
-    }
+    return {
+      login: null,
+      accessToken: null,
+      refreshToken: null,
+      lastModified: null,
+      dataProvider: null,
+    };
   },
   mutations: {
-    setAccessToken(state, token){
+    setAccessToken(state, token) {
       state.accessToken = token;
     },
-    setRefreshToken(state, token){
+    setRefreshToken(state, token) {
       state.refreshToken = token;
-      localForage.setItem('refreshToken', token);
+      localForage.setItem("refreshToken", token);
     },
-    setDataProvider(state, {localLastMod, serverLastMod}){
-      console.log(localLastMod);
-      (()=>{
-        if (!serverLastMod) return state.dataProvider = 'local';
-        if(localLastMod > serverLastMod){
-          state.dataProvider = 'local';
-        } else state.dataProvider = 'server';
-      })();
-      console.log(state.dataProvider);
-      // if (!serverLastMod) return state.dataProvider = 'local';
-      // if(localLastMod > serverLastMod){
-      //   state.dataProvider = 'local';
-      // } else state.dataProvider = 'server';
-    }
-
   },
   actions: {
-    async refreshToken({state}){
+    async refreshToken({ state }) {
       // console.log(state.accessToken);
-      const res = await axios.post("/api/token", {refreshToken: state.refreshToken});
-        state.accessToken = res.data.accessToken;
-        console.log(state.accessToken);
-        return res.data.accessToken;
+      const res = await axios.post("/api/token", {
+        refreshToken: state.refreshToken,
+      });
+      state.accessToken = res.data.accessToken;
+      console.log(state.accessToken);
+      return res.data.accessToken;
     },
-    async sendRequest({dispatch},{url, method = 'get', data = {},}){
-      const accessToken =  await dispatch('refreshToken');
-      return axios({method, url, data, headers:{'Authorization': `bearer ${accessToken}`,'content-type': 'application/json' }});
+    async sendRequest({ dispatch }, { url, method = "get", data = {} }) {
+      const accessToken = await dispatch("refreshToken");
+      return axios({
+        method,
+        url,
+        data,
+        headers: {
+          Authorization: `bearer ${accessToken}`,
+          "content-type": "application/json",
+        },
+      });
     },
-    async logout({state}){
-      axios.delete("/api/logout", {refreshToken: state.refreshToken}).then(()=>{
-        state.accessToken = null;
-        state.refreshToken = null;
-        localForage.setItem("refreshToken", null);
+    logout({ state, dispatch }) {
+      state.dataProvider = "local";
+      axios
+        .delete("/api/logout", { refreshToken: state.refreshToken })
+        .then(async () => {
+          state.accessToken = null;
+          state.refreshToken = null;
+          localForage.clear().then(() => {
+            dispatch("activities/fetchData", { root: true }).then(() => {
+              router.push("/");
+            });
+          });
+        });
+    },
+    async setDataProvider({ state, dispatch }) {
+      const isConnected = window.navigator.onLine;
+      const refreshToken = await localForage.getItem("refreshToken");
 
+      if (!isConnected || !refreshToken) return (state.dataProvider = "local");
+
+      const localLastMod = await localForage.getItem("lastModified");
+      const serverLastMod = await dispatch('sendRequest',{
+        url: "api/lastmodified",
+      });
+
+      if (!serverLastMod) return (state.dataProvider = "local");
+      if (localLastMod > serverLastMod) {
+        state.dataProvider = "local";
+      } else state.dataProvider = "server";
+
+      console.log(state.dataProvider);
+    },
+    signIn({state, commit, dispatch},{login,password}){
+     axios.post('api/login',{
+        login,
+        password,
+      } ).then(async(res) => {
+        const {refreshToken, accessToken} = res.data;
+        commit('setRefreshToken', refreshToken);
+        state.accessToken = accessToken;
+        state.dataProvider = 'server';
+        dispatch('activities/fetchData');
+        router.replace('/activities');
       })
+      .catch(()=>{
+        commit('dialog/displayDialog', {title: "Bład", msg:"Błędne dane logowania", type:'default'}, {root:true});
+      });
     }
   },
-  getters:{
-    accessToken(state){
+  getters: {
+    accessToken(state) {
       return state.accessToken;
     },
-    dataProvider(state){
+    dataProvider(state) {
       return state.dataProvider;
-    }
-  }
-})
+    },
+  },
+});

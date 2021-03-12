@@ -5,12 +5,15 @@ module.exports = {
     },
     addActivity(req, res){
         const user = req.user;
-        user.activities.push(req.body);
-        user.save().then( user => {
+        const activities = req.body;
+        console.log(Array.isArray(activities), activities);
+        user.activities = activities;
+        user.save({ validateBeforeSave: false }).then( user => {
             if (!user) return res.sendStatus(404);
             res.sendStatus(201);
         }
-        );
+        ).catch(err => console.log(err));
+        
     },
     deleteActivity(req,res){
         const user = req.user;

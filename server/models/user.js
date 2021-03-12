@@ -17,7 +17,7 @@ const subTaskSchema = new mongoose.Schema({
         type:String,
         default: "to-do",
     }
-},{_id: false, skipVersioning: { dontVersionMe: true } });
+},{_id: false });
 
 const activitySchema = new mongoose.Schema({
     id: {
@@ -33,7 +33,7 @@ const activitySchema = new mongoose.Schema({
         type:String,
         required: true,
     },
-    progres:{
+    progress:{
         type: Number,
         default: 0,
     },
@@ -42,7 +42,7 @@ const activitySchema = new mongoose.Schema({
         required: true,
     },
     subTasks:[subTaskSchema],
-},{_id: false, skipVersioning: { dontVersionMe: true } });
+},{_id: false, });
 
 const DayActivitySchema= new mongoose.Schema({
     id: {
@@ -53,7 +53,7 @@ const DayActivitySchema= new mongoose.Schema({
     timeStamps:{
         type: Array,
     }
-},{_id: false, skipVersioning: { dontVersionMe: true } })
+},{_id: false,})
 
 const userSchema = new mongoose.Schema({
     login: {
@@ -84,7 +84,7 @@ const userSchema = new mongoose.Schema({
 [DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],[DayActivitySchema],
     ],
     activities:[activitySchema]
-});
+},{skipVersioning:{activeTasks: [true,true,true,true,true,true,true,true]}});
 
 userSchema.pre('save', function(next){
     const user = this;
