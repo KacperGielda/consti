@@ -16,8 +16,8 @@
     <activity
       v-for="activity in selectedDayActivities"
       :key="activity.id"
-      :time-stamps="activity.timeStamps"
       :id="activity.id"
+      :time-stamps="activity.timeStamps"
     />
   </div>
 </template>
@@ -43,8 +43,14 @@ export default {
     }),
     ...mapGetters("activities", ["activeTasks"]),
     selectedDayActivities() {
+      console.log(this.activeTasks[this.selectedDay],this.activeTasks, this.selectedDay);
       return this.activeTasks[this.selectedDay];
     },
+  },
+  watch:{
+    activeTasks(val){
+      console.log(val);
+    }
   },
   methods: {
     toggleCalendarVisibility() {

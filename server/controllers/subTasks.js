@@ -19,7 +19,7 @@ module.exports = {
             if (!user) return res.sendStatus(404);
             res.sendStatus(204);
         }
-        );
+        ).catch(err => console.log(err));
     },
     updateSubTask(req,res){
         const user = req.user;

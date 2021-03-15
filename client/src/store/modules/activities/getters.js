@@ -4,7 +4,8 @@ export default {
     },
     activityById(state) {
         return (id) => {
-            const activity = state.activities.find((task) => task.id === id);
+            const activity = state.activities.find((task) => task.id === Number(id));
+            console.log(state.activities, id);
             return activity;
         };
     },

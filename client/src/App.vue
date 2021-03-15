@@ -5,7 +5,8 @@
         <base-button @click="hideDialog">OK</base-button>
       </template>
       <template v-else #actions>
-        <base-button @click="dialogYes">Tak</base-button>
+        <base-button v-if="dialogType == 'choice-delete'" @click="dialogYesDel">Tak</base-button>
+        <base-button v-if="dialogType == 'choice-deactivate'" @click="dialogYesDeactivate">Tak</base-button>
         <base-button @click="hideDialog">Nie</base-button>
       </template>
     </base-dialog>
@@ -29,7 +30,7 @@ export default {
   components: { TheHeader },
   methods: {
     ...mapMutations("dialog", ["hideDialog"]),
-    ...mapActions("dialog", ["dialogYes"])
+    ...mapActions("dialog", ["dialogYesDel", "dialogYesDeactivate"]),
   },
   computed: {
     ...mapGetters("dialog", ["dialogType"]),

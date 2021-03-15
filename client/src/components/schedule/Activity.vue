@@ -1,5 +1,6 @@
 <template>
-  <div class="activity">
+  <div class="activity" v-if="!isLoading">
+    <div v-if="activity">
     <header @click="togleTasksVivsibility">
       <div class="time-stamps">
         {{ timeStampsText }}
@@ -17,7 +18,9 @@
         ></base-task-list>
       </section>
     </transition>
+    </div>
   </div>
+  <div v-else></div>
 </template>
 
 <script>
@@ -27,6 +30,7 @@ export default {
   data() {
     return {
       showTasks: false,
+      isLoading: true,
     };
   },
   computed: {
@@ -53,6 +57,14 @@ export default {
       this.showTasks = !this.showTasks;
     },
   },
+  watch:{
+    activity(val){
+      if (val) this.isLoading = false;
+    }
+  },
+  mounted(){
+    if (this.activity) this.isLoading = false;
+  }
 };
 </script>
 

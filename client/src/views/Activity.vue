@@ -140,7 +140,7 @@ export default {
       // console.log(this.$refs);
       if (this.newTitle) {
           this.title = this.newTitle;
-          this.activity.title = this.newTitle;
+         this.$store.dispatch('activities/changeTitle', {id:Number(this.id),  title:this.newTitle});
       } else this.newTitle = "";
     },
     save() {
