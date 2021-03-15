@@ -81,5 +81,11 @@ dialog {
     justify-content: space-around;
     align-items: center;
   }
+  h2{
+    font-size: 20px;
+  }
+  p{
+    font-size:15px
+  }
 }
 </style>

@@ -39,5 +39,8 @@ export default {
 .home {
   width: 100%;
   height: calc(100vh - 50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

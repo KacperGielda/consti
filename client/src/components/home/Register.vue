@@ -65,6 +65,9 @@ export default {
     passwordValue() {
       return this.password.value;
     },
+    repeatValue(){
+      return this.password.repeatValue;
+    },
     emailValue() {
       return this.email.value;
     }
@@ -84,6 +87,11 @@ export default {
     emailValue(val){
       if(!emailValidator.validate(val) && val.length != 0) return this.email.validity = "Niepoprawny adress email";
       return this.email.validity = "";
+    },
+    repeatValue(val){
+        if (val.length < 4 && val.length != 0) return this.password.validity = "Hasło musi mieć przynajmniej 4 znaki";
+      if (val != this.password.value && (this.password.value.length != 0 || val.length != 0)) return this.password.validity="Hasła się nie zgadzają"
+      return this.password.validity = ""; 
     }
   },
   methods:{

@@ -19,19 +19,19 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 150px;
+
 }
 .window {
   background-color: $white;
-  position: absolute;
   width: 400px;
   max-width: 90vw;
-  height: fit-content;
   border-radius: 20px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   box-shadow: 2px 2px rgba($black, 0.1);
+  margin: 0 150px;
   header {
     border-radius: 20px 20px 0 0;
     height: 50px;
