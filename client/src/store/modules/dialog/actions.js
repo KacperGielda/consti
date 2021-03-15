@@ -4,7 +4,6 @@ export default {
         dispatch('activities/delActivity',state.activityId, {root: true});
     },
     dialogYesDeactivate({state, dispatch, commit}){ 
-        console.log("sdsdsf");
         commit('hideDialog');
         dispatch('activities/deactivate',state.activityId, {root: true});
     }

@@ -43,14 +43,8 @@ export default {
     }),
     ...mapGetters("activities", ["activeTasks"]),
     selectedDayActivities() {
-      console.log(this.activeTasks[this.selectedDay],this.activeTasks, this.selectedDay);
       return this.activeTasks[this.selectedDay];
     },
-  },
-  watch:{
-    activeTasks(val){
-      console.log(val);
-    }
   },
   methods: {
     toggleCalendarVisibility() {

@@ -5,14 +5,12 @@ export default {
     activityById(state) {
         return (id) => {
             const activity = state.activities.find((task) => task.id === Number(id));
-            console.log(state.activities, id);
             return activity;
         };
     },
     activities(state) {
         const active = [];
         const notActive = [];
-        console.log(state.activities, "wrwerwrwerewwer");
         state.activities.forEach((activity) => {
             if (activity.isActive) active.push(activity);
             else notActive.push(activity);

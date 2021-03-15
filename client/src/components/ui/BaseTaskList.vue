@@ -43,9 +43,6 @@ export default {
            this.$store.dispatch('activities/changeSubTaskStatus', {subTaskId, activityId: this.activityId});
        }
     },
-    // mounted() {
-    //     console.log(this.subTasks);
-    // },
 
 }
 </script>

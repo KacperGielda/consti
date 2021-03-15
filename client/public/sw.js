@@ -15,11 +15,15 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 workbox.routing.registerNavigationRoute(workbox.precaching.getCacheKeyForURL("index.html"));
 
  workbox.routing.registerRoute(
-  new RegExp('\\api$'),
-   async ()=>{
-     const dupa = await localforage.setItem('dupa', 'local forage');
-       return new Response(
-              JSON.stringify(dupa)
-            );
-       }
+  /^https:\/\/fonts\.googleapis\.com/,
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'google-fonts-stylesheets',
+  })
+ );
+ 
+ workbox.routing.registerRoute(
+  "https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js",
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'ionic-icons',
+  })
  );

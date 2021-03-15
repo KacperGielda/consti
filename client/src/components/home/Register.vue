@@ -96,7 +96,6 @@ export default {
         activities: await localForage.getItem('activities'),
       }}).then(res => {
         const {accessToken, refreshToken} = res.data;
-        console.log(accessToken, refreshToken, res.data);
          this.$store.commit("setRefreshToken", refreshToken);
          this.$store.commit("setAccessToken", accessToken);
           this.$store.dispatch("setDataProvider");

@@ -61,7 +61,6 @@ export default {
           if (newValue[0] < el[0] && newValue[1] > el[1] - 1) isOcupied = true;
         });
         if (isOcupied || newValue[0] >= newValue[1]) {
-          console.log("error");
           this.status = "error";
           return;
         }
@@ -70,7 +69,6 @@ export default {
         } else {
           this.status = "";
         }
-        // console.log(this.status);
       },
     },
     show(newValue) {
@@ -89,9 +87,7 @@ export default {
     undo() {
       if (this.dayData) {
         this.timeStamps = this.default.slice();
-        console.log(this.default);
         this.status = "";
-        console.log(this.status);
         this.show = true;
       } else {
         this.timeStamps = this.default.slice();
@@ -99,9 +95,6 @@ export default {
         this.show = false;
       }
     },
-  },
-  created() {
-    console.log(this.blockers, this.day);
   },
 };
 </script>

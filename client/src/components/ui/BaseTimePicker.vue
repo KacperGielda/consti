@@ -30,16 +30,6 @@ export default {
       className: "",
     };
   },
-  // computed: {
-  //   hour() {
-  //     let hour = Math.floor(this.value);
-  //     return hour.toString().length == 1 ? `0${hour}` : hour.toString();
-  //   },
-  //   minute() {
-  //     let minute = this.value - Math.floor(this.value);
-  //     return minute.toString().length == 1 ? `0${minute}` : minute.toString();
-  //   },
-  // },
   watch: {
     value(v) {
       let hour = Math.floor(v);
@@ -71,7 +61,6 @@ export default {
             off = true;
           }
         });
-        // console.log(i, off);
 
         this.hours[i] = { value, off };
       }

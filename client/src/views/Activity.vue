@@ -91,7 +91,6 @@ export default {
     //   return 
     // },
     terms() {
-      console.log(this.terms, "dupa");
       return JSON.parse(JSON.stringify(this.termsById(Number(this.id))));
     },
   },
@@ -102,7 +101,6 @@ export default {
     pickedTerms: {
       deep: true,
       handler(value) {
-        console.log(value);
         if (value.findIndex((el) => el.status == "error") != -1)
           this.allowToSave = false;
         else if (value.findIndex((el) => el.status == "changed") != -1)
@@ -113,11 +111,10 @@ export default {
     },
   },
   mounted() {
-    // console.log(this.terms);
     this.isLoading = true;
 
     this.activity = this.activityById(Number(this.id));
-  console.log("Activity", this.activity);
+
     this.isLoading = false;
 
     this.newTitle = this.activity.title;
@@ -137,7 +134,6 @@ export default {
     ...mapActions("activities", ["resetSubTasks", "deleteActivity"]),
     changeTitle() {
       this.titleEditMode = !this.titleEditMode;
-      // console.log(this.$refs);
       if (this.newTitle) {
           this.title = this.newTitle;
          this.$store.dispatch('activities/changeTitle', {id:Number(this.id),  title:this.newTitle});
@@ -146,11 +142,9 @@ export default {
     save() {
       const changedTermsIndexes = [];
       this.pickedTerms.forEach((el, index) => {
-        console.log(el);
         if (el.status == "changed") changedTermsIndexes.push(index);
       });
 
-      console.log(changedTermsIndexes);
       changedTermsIndexes.forEach((el) => {
         this.$store.dispatch("activities/updateActiveTasks", {
           id: Number(this.id),

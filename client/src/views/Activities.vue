@@ -33,7 +33,6 @@ export default {
   computed: {
     ...mapGetters("activities", ["activities"]),
     activeExist() {
-      console.log(this.activities);
       return this.activities.active.length > 0;
     },
     notActiveExist() {

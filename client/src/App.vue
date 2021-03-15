@@ -36,11 +36,6 @@ export default {
     ...mapGetters("dialog", ["dialogType"]),
     ...mapGetters("activities", ["activeTasks", "activities"])
   },
-  watch: {
-    dialogType(value) {
-      console.log(value);
-    },
-  },
   async mounted() {
     const lastModified = await localForage.getItem("lastModified");
     const refreshToken = await localForage.getItem('refreshToken');

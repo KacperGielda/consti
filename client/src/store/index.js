@@ -33,12 +33,10 @@ export default createStore({
   },
   actions: {
     async refreshToken({ state }) {
-      // console.log(state.accessToken);
       const res = await axios.post("/api/token", {
         refreshToken: state.refreshToken,
       });
       state.accessToken = res.data.accessToken;
-      console.log(state.accessToken);
       return res.data.accessToken;
     },
     async sendRequest({ dispatch }, { url, method = "get", data = {} }) {
@@ -84,7 +82,6 @@ export default createStore({
         state.dataProvider = "local";
       } else state.dataProvider = "server";
 
-      console.log(state.dataProvider);
     },
     signIn({state, commit, dispatch},{login,password}){
      axios.post('api/login',{

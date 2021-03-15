@@ -14,7 +14,6 @@ const calcTaskProgres = (activity) => {
   activity.subTasks.forEach((el) => {
     if (el.status == "done") doneCounter++;
   });
-  console.log(tasks, doneCounter);
   if (doneCounter === 0) return 0;
   return Math.round((doneCounter / tasks) * 100);
 };
@@ -60,7 +59,6 @@ export default {
         localForage.getItem("activeTasks").then((res) => {
           if (!res) res = [[], [], [], [], [], [], [], []];
           state.activeTasks = res;
-          console.log(res);
         });
         break;
       case "server":
@@ -98,7 +96,6 @@ export default {
     };
 
     state.activities.push(activity);
-    console.log(state.activities);
     saveActivitiesLocaly(state, dispatch);
     if (rootGetters.canSendRequest) {
       dispatch(
@@ -118,7 +115,6 @@ export default {
 
   changeTitle({ state, dispatch, rootGetters }, { id, title}) {
     if(!title || title == "") return;
-    console.log(title); 
     const activity = findActivityById(state, id);
     (activity.title = title), saveActivitiesLocaly(state, dispatch);
 
@@ -153,7 +149,6 @@ export default {
       );
   },
   delActivity({ state, dispatch, rootGetters }, id) {
-    console.log("asas", id);
     for (let weekDay = 0; weekDay < 7; weekDay++) {
       dispatch("updateActiveTasks", { show: false, id, weekDay, save: false });
     }
@@ -179,7 +174,6 @@ export default {
     id = Number(id);
     const activity = findActivityById(state, id);
     activity.isActive = false;
-    console.log(state.activeTasks);
     const newActiveTasks = [];
     state.activeTasks.forEach((weekDay) => {
       weekDay = weekDay.filter((el) => el.id !== id);
@@ -237,7 +231,6 @@ export default {
     if (save) {
       saveActiveTasksLocaly(state, dispatch);
       saveActivitiesLocaly(state, dispatch);
-      console.log(newDayPlan);
       if (rootGetters.canSendRequest) {
         dispatch(
           "sendRequest",
